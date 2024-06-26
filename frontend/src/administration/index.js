@@ -1,4 +1,5 @@
 // ADMINISTRATION INDEX
+export { default as Administration } from './Administration'
 export { default as Announcements } from './Announcements'
 export { default as Documents } from './Documents'
 export { default as Evaluations } from './Evaluations'
