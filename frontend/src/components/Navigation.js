@@ -29,7 +29,7 @@ export default function Navigation() {
                             Documents
                         </ListItemButton>
                     </ListItem>
-                    <ListItem disablePadding>
+                    {/*<ListItem disablePadding>
                         <ListItemButton variant="text" component={Link} to="/admin">
                             Admin
                         </ListItemButton>
@@ -43,7 +43,7 @@ export default function Navigation() {
                         <ListItemButton variant="text" component={Link} to="/help">
                            <Help />
                         </ListItemButton>
-                    </ListItem>
+                    </ListItem>*/}
                 </List>
             </Toolbar>
         </AppBar>

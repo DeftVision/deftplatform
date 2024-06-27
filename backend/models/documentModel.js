@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 const schema = mongoose.Schema;
 
 const documentSchema = new schema({
-    documentName: {
+    title: {
         type: String,
         required: true,
     },
-    documentCategory: {
+    category: {
         type: String,
         required: true,
     },
@@ -14,7 +14,7 @@ const documentSchema = new schema({
         type: String,
         required: true,
     },
-    uploadFileName: {
+    fileName: {
         type: String,
         required: true,
     },

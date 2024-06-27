@@ -49,13 +49,13 @@ exports.getDocument = async (req, res) => {
 
 exports.newDocument = async (req, res) => {
     try {
-        const {docName, category, docUpload} = req.body;
-        if (!docName || !category || !docUpload) {
+        const {title, category, downloadUrl, fileName} = req.body;
+        if (!title || !category || !downloadUrl || !fileName) {
             return res.send({
                 message: "All fields are required"
             })
         }
-        const document = new documentModel({docName, category, docUpload});
+        const document = new documentModel({title, category, downloadUrl, fileName});
         await document.save();
         return res.send({
 
@@ -76,7 +76,7 @@ exports.newDocument = async (req, res) => {
 exports.updateDocument = async (req, res) => {
     try {
         const {id} = req.params;
-        const {docName, category, docUpload} = req.body;
+        const {title, category, downloadUrl, fileName} = req.body;
         const document = await documentModel.findByIdAndUpdate(id, req.body, {new: true});
         if (!document) {
             return res.send({
