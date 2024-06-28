@@ -5,6 +5,7 @@ import { Routes, Route } from 'react-router-dom';
 import { Administration, Announcements, Users, Documents, Evaluations } from './administration/index';
 import { Navigation } from './components/index';
 import { DocumentForm } from './documents/index';
+import { AnnouncementForm } from './announcements/index';
 import { Help, Home, Settings } from './pages/index';
 import Error from './pages/Error';
 import { useEffect, useState } from "react";
@@ -53,10 +54,15 @@ function App() {
                         <Routes>
                             <Route path="/" element={<Home />} />
                             <Route path="/admin" element={<Administration />} />
+
                             <Route path="/documents" element={<Documents />} />
                             <Route path="/document-form" element={<DocumentForm newDocument />} />
                             <Route path="/edit-document/:id" element={<DocumentForm />} />
+
                             <Route path="/announcements" element={<Announcements />} />
+                            <Route path="/announcement-form" element={<AnnouncementForm newAnnouncement/>} />
+                            <Route path="/edit-announcement/:id" element={<AnnouncementForm />} />
+
                             <Route path="/evaluations" element={<Evaluations />} />
                             <Route path="/help" element={<Help />} />
                             <Route path="/users" element={<Users />} />

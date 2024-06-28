@@ -14,7 +14,7 @@ const announcementSchema = new schema({
         type: String,
         required: true,
     },
-    display: {
+    publish: {
         type: Boolean,
     },
     priority: {

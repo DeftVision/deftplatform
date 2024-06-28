@@ -50,14 +50,14 @@ exports.getAnnouncement = async (req, res) => {
 
 exports.newAnnouncement = async (req, res) => {
     try {
-        const {title, subject, content, display, priority, role} = req.body;
+        const {title, subject, content, publish, priority, role} = req.body;
 
         if(!title || !subject || !content || !priority || !role) {
             return res.send({
                 message: 'All fields are required',
             })
         }
-        const announcement = new announcementModel({title, subject, content, display, priority, role});
+        const announcement = new announcementModel({title, subject, content, publish, priority, role});
         await announcement.save();
         return res.send({
             message: 'Announcement was saved successfully',
@@ -76,7 +76,7 @@ exports.newAnnouncement = async (req, res) => {
 exports.updateAnnouncement = async (req, res) => {
     try {
         const {id} = req.params;
-        const {title, subject, content, display, priority, role} = req.body;
+        const {title, subject, content, publish, priority, role} = req.body;
         const announcement = await announcementModel.findByIdAndUpdate(id, req.body, {new: true});
         if (!announcement) {
             return res.send({
