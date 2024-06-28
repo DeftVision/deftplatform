@@ -172,12 +172,12 @@ export default function DocumentForm({ newDocument }) {
             <form onSubmit={handleSubmit}>
                 <Box>
                     <TextField
-                        id="document-name"
+                        id="document-title"
                         type="text"
                         variant="outlined"
                         label="title"
                         fullWidth
-                        autoComplete="document name"
+                        autoComplete="document title"
                         sx={{ marginBottom: 3 }}
                         value={form.title}
                         onChange={(e) => {

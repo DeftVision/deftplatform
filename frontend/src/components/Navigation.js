@@ -21,6 +21,11 @@ export default function Navigation({ toggleTheme, theme }) {
                             Documents
                         </ListItemButton>
                     </ListItem>
+                    <ListItem disablePadding>
+                        <ListItemButton variant="text" component={Link} to="/announcements">
+                            Announcements
+                        </ListItemButton>
+                    </ListItem>
                 </List>
                 <FormControlLabel
                     control={<Switch

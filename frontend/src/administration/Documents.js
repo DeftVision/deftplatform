@@ -83,7 +83,7 @@ export default function Documents() {
                             <TableRow>
                                 <TableCell>Title</TableCell>
                                 <TableCell>Category</TableCell>
-                                <TableCell>Actions</TableCell>
+                                <TableCell>Action</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
