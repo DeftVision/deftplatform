@@ -19,7 +19,7 @@ exports.getAnnouncements = async (req, res) => {
         console.log(error);
         return res.send({
             message: 'Error getting all announcements',
-            error,
+            error: error,
         })
     }
 }
@@ -43,7 +43,7 @@ exports.getAnnouncement = async (req, res) => {
         console.log(error);
         return res.send({
             message: 'Error getting announcement',
-            error,
+            error: error,
         })
     }
 }
@@ -68,7 +68,7 @@ exports.newAnnouncement = async (req, res) => {
         console.log(error);
         return res.send({
             message: 'Error saving an announcement',
-            error,
+            error: error,
         })
     }
 }
@@ -93,7 +93,7 @@ exports.updateAnnouncement = async (req, res) => {
         console.log(error);
         return res.send({
             message: 'Error updating an announcement',
-            error,
+            error: error,
         })
     }
 }
@@ -116,7 +116,7 @@ exports.deleteAnnouncement = async (req, res) => {
         console.log(error);
         return res.send({
             message: 'Error deleting an announcement',
-            error,
+            error: error,
         })
     }
 }

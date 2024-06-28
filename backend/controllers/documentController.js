@@ -19,7 +19,7 @@ exports.getDocuments = async (req, res) => {
         console.log(error);
         return res.send({
             message: "get documents callback error",
-            error,
+            error: error,
         })
     }
 }
@@ -42,7 +42,7 @@ exports.getDocument = async (req, res) => {
         console.log(error);
         return res.send({
             message: "getting document callback error",
-            error,
+            error: error,
         })
     }
 }
@@ -67,7 +67,7 @@ exports.newDocument = async (req, res) => {
         console.log(error);
         return res.send({
             message: "creating document callback error",
-            error,
+            error: error,
         })
     }
 
@@ -93,7 +93,7 @@ exports.updateDocument = async (req, res) => {
         console.log(error);
         return res.send({
             message: "updating document callback error",
-            error,
+            error: error,
         })
     }
 }
@@ -115,7 +115,7 @@ exports.deleteDocument = async (req, res) => {
         console.log(error);
         return res.send({
             message: "deleting document callback error",
-            error,
+            error: error,
         })
     }
 }
