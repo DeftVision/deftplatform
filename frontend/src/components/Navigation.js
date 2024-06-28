@@ -1,17 +1,9 @@
-import { AppBar, IconButton, List, ListItem, styled, Toolbar, ListItemButton } from '@mui/material';
-import { Help } from '@mui/icons-material';
-import { Menu } from '@mui/icons-material';
+import { AppBar, FormControlLabel, IconButton, List, ListItem, Switch, Toolbar, ListItemButton } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import {Menu, DarkMode, WbSunny} from "@mui/icons-material";
 
 
-export default function Navigation() {
-    const [showMenu, setShowMenu] = useState(null);
-
-    const toggleShowMenu = (e) => {
-
-    }
-
+export default function Navigation({ toggleTheme, theme }) {
     return (
         <AppBar position="sticky">
             <Toolbar>
@@ -29,22 +21,17 @@ export default function Navigation() {
                             Documents
                         </ListItemButton>
                     </ListItem>
-                    {/*<ListItem disablePadding>
-                        <ListItemButton variant="text" component={Link} to="/admin">
-                            Admin
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem disablePadding>
-                        <ListItemButton variant="text" component={Link} to="/settings">
-                            Settings
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem disablePadding>
-                        <ListItemButton variant="text" component={Link} to="/help">
-                           <Help />
-                        </ListItemButton>
-                    </ListItem>*/}
                 </List>
+                <FormControlLabel
+                    control={<Switch
+                        checked={theme === 'dark'}
+                        onChange={toggleTheme}
+                        icon={<DarkMode />}
+                        checkedIcon={<WbSunny />}
+                    />}
+                    label=""
+                    sx={{ marginLeft: 'auto' }}
+                />
             </Toolbar>
         </AppBar>
     );
