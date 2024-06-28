@@ -45,20 +45,24 @@ export default function Documents() {
         getDocuments();
     }, []);
 
-    async function deleteDocument(documentId, fileName) {
+    async function deleteDocument(documentId, uniqueFileName) {
         try {
-            // Delete the file from Firebase Storage
-            const storage = getStorage();
-            const fileRef = ref(storage, `uploads/${fileName}`);
-            await deleteObject(fileRef);
-
             // Delete the document record from the database
             const response = await fetch(`http://localhost:7000/api/docs/delete/${documentId}`, {
                 method: "DELETE",
             });
 
+
+
+
+
             if(response.ok) {
                 setDocuments(documents.filter(document => document._id !== documentId));
+
+                // Delete the file from Firebase Storage
+                const storage = getStorage();
+                const fileRef = ref(storage, `uploads/${uniqueFileName}`);
+                await deleteObject(fileRef);
             } else {
                 const _response = await response.json();
                 console.error(_response.error);
