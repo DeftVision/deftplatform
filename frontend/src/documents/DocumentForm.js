@@ -46,6 +46,7 @@ export default function DocumentForm({ newDocument }) {
             if (response.ok) {
                 const { title, category, downloadUrl, uniqueFileName } = _response.document;
                 setForm({ title, category, downloadUrl, uniqueFileName });
+
             } else {
                 console.error('Error occurred while fetching document');
             }
@@ -53,10 +54,11 @@ export default function DocumentForm({ newDocument }) {
         if (!newDocument) {
             editDocument();
         }
-    }, [id, newDocument]);
+    }, [id]);
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
+
         if (selectedFile) {
             setFileName(selectedFile.name);
             setFile(selectedFile);
@@ -144,8 +146,8 @@ export default function DocumentForm({ newDocument }) {
         e.preventDefault();
         if (form.title && form.category) {
             try {
-                if(!newDocument && form.fileName) {
-                    await deleteExistingFile(`uploads/${form.fileName}`);
+                if(!newDocument && file) {
+                    await deleteExistingFile(`uploads/${form.uniqueFileName}`);
                 }
                 await uploadFileToFirebase();
                 if (form.downloadUrl) {

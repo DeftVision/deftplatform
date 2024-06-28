@@ -55,7 +55,7 @@ function App() {
                             <Route path="/admin" element={<Administration />} />
                             <Route path="/documents" element={<Documents />} />
                             <Route path="/document-form" element={<DocumentForm newDocument />} />
-                            <Route path="/edit-document-form" element={<DocumentForm />} />
+                            <Route path="/edit-document/:id" element={<DocumentForm />} />
                             <Route path="/announcements" element={<Announcements />} />
                             <Route path="/evaluations" element={<Evaluations />} />
                             <Route path="/help" element={<Help />} />
