@@ -10,7 +10,7 @@ exports.getDocuments = async (req, res) => {
         }
         if (documents) {
             return res.send({
-                documentCount: documents.length,
+                document_count: documents.length,
                 documents,
             })
 
