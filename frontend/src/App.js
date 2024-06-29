@@ -2,8 +2,8 @@ import './App.css';
 import { Box, Container, CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Routes, Route } from 'react-router-dom';
-import { Administration, Announcements, Users, Documents, Evaluations } from './administration/index';
-import { Navigation } from './components/index';
+import { Administration, Announcements, Dashboard, Users, Documents, Evaluations } from './administration/index';
+import { Navigation, NavDrawer } from './components/index';
 import { DocumentForm } from './documents/index';
 import { EvaluationForm } from './evaluations/index';
 import { AnnouncementForm } from './announcements/index';
@@ -48,13 +48,16 @@ function App() {
     return (
         <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
             <CssBaseline />
-            <Navigation toggleTheme={toggleTheme} theme={theme} />
+            {/*<Navigation toggleTheme={toggleTheme} theme={theme} />*/}
+            <NavDrawer toggleTheme={toggleTheme} theme={theme} />
             <Container sx={{ marginTop: 5 }}>
                 <Box>
                     <div className="App">
                         <Routes>
                             <Route path="/" element={<Home />} />
                             <Route path="/admin" element={<Administration />} />
+
+                            <Route path="/dashboard" element={<Dashboard />} />
 
                             <Route path="/documents" element={<Documents />} />
                             <Route path="/document-form" element={<DocumentForm newDocument />} />
