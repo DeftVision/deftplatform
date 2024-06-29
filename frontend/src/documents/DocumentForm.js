@@ -46,7 +46,6 @@ export default function DocumentForm({ newDocument }) {
             if (response.ok) {
                 const { title, category, downloadUrl, uniqueFileName } = _response.document;
                 setForm({ title, category, downloadUrl, uniqueFileName });
-
             } else {
                 console.error('Error occurred while fetching document');
             }

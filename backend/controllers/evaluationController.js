@@ -1,5 +1,5 @@
 const evaluationModel = require("../models/evaluationModel");
-const announcementModel = require("../models/announcementModel");
+
 
 
 exports.getEvaluations = async (req, res) => {
@@ -52,7 +52,7 @@ exports.getEvaluation = async (req, res) => {
 exports.newEvaluation = async (req, res) => {
     try {
         const {visitDateTime, location, evaluator, cashier, greeting, repeatOrder, upsell, patio, wait, foodScore, appearanceScore, serviceScore, image, identifyManager, comments} = req.body;
-        if(!location || !cashier || !wait || !foodScore || !appearanceScore || !serviceScore || !image || !comments) {
+        if(!visitDateTime || !evaluator || !location || !cashier || !wait || !foodScore || !appearanceScore || !serviceScore || !image || !comments) {
             return res.send({
                 message: 'Complete required fields',
             })
