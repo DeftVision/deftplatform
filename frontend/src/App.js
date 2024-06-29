@@ -5,6 +5,7 @@ import { Routes, Route } from 'react-router-dom';
 import { Administration, Announcements, Users, Documents, Evaluations } from './administration/index';
 import { Navigation } from './components/index';
 import { DocumentForm } from './documents/index';
+import { EvaluationForm } from './evaluations/index';
 import { AnnouncementForm } from './announcements/index';
 import { Help, Home, Settings } from './pages/index';
 import Error from './pages/Error';
@@ -64,6 +65,11 @@ function App() {
                             <Route path="/edit-announcement/:id" element={<AnnouncementForm />} />
 
                             <Route path="/evaluations" element={<Evaluations />} />
+                            <Route path="/evaluation-form" element={<EvaluationForm newEvaluation />} />
+                            <Route path="/edit-evaluation/:id" element={<EvaluationForm />} />
+
+                            <Route path="/administration" element={<Administration />} />
+
                             <Route path="/help" element={<Help />} />
                             <Route path="/users" element={<Users />} />
                             <Route path="/settings" element={<Settings />} />

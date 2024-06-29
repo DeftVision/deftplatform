@@ -17,6 +17,11 @@ export default function Navigation({ toggleTheme, theme }) {
                         </ListItemButton>
                     </ListItem>
                     <ListItem disablePadding>
+                        <ListItemButton variant="text" component={Link} to="/evaluations">
+                            Evaluations
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
                         <ListItemButton variant="text" component={Link} to="/documents">
                             Documents
                         </ListItemButton>
@@ -24,6 +29,11 @@ export default function Navigation({ toggleTheme, theme }) {
                     <ListItem disablePadding>
                         <ListItemButton variant="text" component={Link} to="/announcements">
                             Announcements
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                        <ListItemButton variant="text" component={Link} to="/administration">
+                            Admin
                         </ListItemButton>
                     </ListItem>
                 </List>
