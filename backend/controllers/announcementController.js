@@ -80,7 +80,7 @@ exports.updateAnnouncement = async (req, res) => {
         const announcement = await announcementModel.findByIdAndUpdate(id, req.body, {new: true});
         if (!announcement) {
             return res.send({
-                message: "Announcement wasn't saved",
+                message: "Announcement wasn't found",
             })
         } else {
             return res.send({
