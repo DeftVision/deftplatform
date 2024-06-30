@@ -9,6 +9,7 @@ import {
     Select,
     Slider,
     Stack,
+    styled,
     Switch,
     TextField,
     Typography
@@ -16,6 +17,8 @@ import {
 import {useState, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
 // bring in firebase shit...
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { v4 as uuidv4 } from 'uuid';
 
 const getCurrentDateTime = () => {
     const now = new Date();
@@ -40,14 +43,27 @@ const form_default = {
     foodScore: 0,
     appearanceScore: 0,
     serviceScore: 0,
-    image: "",
+
     identifyManager: false,
     comments: ""
 }
 
+const VisuallyHiddenInput = styled('input')({
+    clip: 'rect(0 0 0 0)',
+    clipPath: 'inset(50%)',
+    height: 1,
+    overflow: 'hidden',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    whiteSpace: 'nowrap',
+    width: 1,
+});
+
 
 export default function EvaluationForm({newEvaluation}) {
     const [form, setForm] = useState(form_default);
+    const [errors, setErrors] = useState({});
     const {id} = useParams();
 
     useEffect(() => {
@@ -148,9 +164,10 @@ return (
                     InputLabelProps={{
                         shrink: true,
                     }}
+                    required
                 />
                 <FormControl fullWidth sx={{marginBottom: 3}}>
-                    <InputLabel id="location-label">location</InputLabel>
+                    <InputLabel id="location-label" required>location</InputLabel>
                     <Select
                         labelId="location-label"
                         id="location"
@@ -159,6 +176,7 @@ return (
                         value={form.location}
                         sx={{textAlign: 'start'}}
                         onChange={handleChange}
+                        noValidate
                     >
                         <MenuItem value="location 1">location 1</MenuItem>
                         <MenuItem value="location 2">Location 2</MenuItem>
@@ -177,6 +195,8 @@ return (
                     sx={{marginBottom: 3}}
                     value={form.evaluator}
                     onChange={handleChange}
+                    required
+                    noValidate
                 />
                 <TextField
                     id="cashier"
@@ -184,11 +204,15 @@ return (
                     variant="outlined"
                     label="cashier"
                     name="cashier"
+                    multiline
+                    maxRows={3}
                     fullWidth
                     autoComplete="cashier-name"
                     sx={{marginBottom: 3}}
                     value={form.cashier}
                     onChange={handleChange}
+                    required
+                    noValidate
                 />
                 <FormControlLabel
                     control={<Switch
@@ -238,7 +262,7 @@ return (
 
                 <TextField
                     id="wait-food"
-                    type="text"
+                    type="number"
                     variant="outlined"
                     label="wait [in minutes]"
                     name="wait"
@@ -247,6 +271,8 @@ return (
                     sx={{marginBottom: 3}}
                     value={form.wait}
                     onChange={handleChange}
+                    inputProps={{min: 0, max: 120}}
+                    required
                 />
 
                 {/*<TextField
@@ -288,7 +314,7 @@ return (
                 />*/}
 
                 <Stack spacing={1} sx={{ marginBottom: 3 }}>
-                    <Typography gutterBottom sx={{ textAlign: 'start' }}>Food Score</Typography>
+                    <Typography gutterBottom sx={{ textAlign: 'start' }}>Food Score:</Typography>
                     <Slider
                         id="food-score"
                         name="foodScore"
@@ -333,15 +359,18 @@ return (
                     label="comments"
                     name="comments"
                     multiline
+                    rows={4}
                     maxRows={10}
                     fullWidth
                     autoComplete="comments"
                     sx={{marginBottom: 3}}
                     value={form.comments}
                     onChange={handleChange}
+                    required
                 />
 
-                <TextField
+                {/*IMAGE TEXT FIELD*/}
+                {/*<TextField
                     id="image"
                     type="text"
                     variant="outlined"
@@ -352,8 +381,28 @@ return (
                     sx={{marginBottom: 3}}
                     value={form.image}
                     onChange={handleChange}
-                />
+                />*/}
 
+
+                <Box>
+                    <Stack direction="row" spacing={2} sx={{marginBottom: 5, justifyContent: 'center', alignItems: 'center'}}>
+                        <Button
+                            component="label"
+                            variant="outlined"
+                            startIcon={<CloudUploadIcon />}
+                        >
+                            UPLOAD
+                            <VisuallyHiddenInput
+                                type="file"
+                                // onChange={handleFileChange}
+                            />
+                        </Button>
+                        <Typography>
+                            {/*{fileName}*/}
+                            :
+                        </Typography>
+                    </Stack>
+                </Box>
 
                 <Box>
                     <Button

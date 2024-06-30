@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 export default function Help () {
     return (
         <Box>
-            <Typography>Help</Typography>
+            <Typography>Support Tickets</Typography>
         </Box>
     );
 };
