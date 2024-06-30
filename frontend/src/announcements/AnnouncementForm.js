@@ -81,27 +81,6 @@ export default function AnnouncementForm ({newAnnouncement}) {
         })
     }
 
-    /*const handleRoleChange = (e) => {
-        setForm({
-            ...form,
-            role: e.target.value
-        })
-    }
-
-    const handlePriorityChange = (e) => {
-        setForm({
-            ...form,
-            priority: e.target.value
-        })
-    }
-
-    const handlePublishChange = (e) => {
-        setForm({
-            ...form,
-            publish: e.target.checked
-        })
-    }*/
-
     return (
         <>
             <Box>

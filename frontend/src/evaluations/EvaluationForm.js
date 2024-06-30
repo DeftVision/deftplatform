@@ -149,6 +149,9 @@ const handleSubmit = async (e) => {
 return (
     <>
         <Box>
+            <Typography>Evaluation Form</Typography>
+        </Box>
+        <Box>
             <form onSubmit={handleSubmit}>
                 <TextField
                     id="visit-date-time"
@@ -205,7 +208,6 @@ return (
                     label="cashier"
                     name="cashier"
                     multiline
-                    maxRows={3}
                     fullWidth
                     autoComplete="cashier-name"
                     sx={{marginBottom: 3}}
@@ -360,7 +362,6 @@ return (
                     name="comments"
                     multiline
                     rows={4}
-                    maxRows={10}
                     fullWidth
                     autoComplete="comments"
                     sx={{marginBottom: 3}}
