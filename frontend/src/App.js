@@ -2,14 +2,14 @@ import './App.css';
 import { Box, Container, CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Routes, Route } from 'react-router-dom';
-import { Administration, Users } from './administration/index';
+import { Administration } from './administration/index';
 import { NavDrawer } from './components/index';
 import { Dashboard, DashboardData } from './dashboard/index';
 import { Documents, DocumentForm } from './documents/index';
-
 import { Evaluations, EvaluationForm } from './evaluations/index';
 import { Announcements, AnnouncementForm } from './announcements/index';
 import { Help, Home, Settings } from './pages/index';
+import { Users, UserForm } from './users/index';
 import Error from './pages/Error';
 import { useEffect, useState } from "react";
 
@@ -76,7 +76,11 @@ function App() {
                             <Route path="/administration" element={<Administration />} />
 
                             <Route path="/help" element={<Help />} />
+
                             <Route path="/users" element={<Users />} />
+                            <Route path="/user-form" element={<UserForm newUser/>} />
+                            <Route path="/edit-user/:id" element={<UserForm />} />
+
                             <Route path="/settings" element={<Settings />} />
                             <Route path="*" element={<Error />} />
                         </Routes>

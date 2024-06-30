@@ -20,6 +20,7 @@ import {
     Leaderboard,
     LocalLibrary,
     Menu,
+    Person,
     WbSunny
 } from '@mui/icons-material';
 import {useState} from 'react';
@@ -76,6 +77,14 @@ export default function NavDrawer({toggleTheme, theme}) {
                                 <LocalLibrary/>
                             </ListItemIcon>
                             <ListItemText primary="Documents"/>
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                        <ListItemButton component={Link} to="/users">
+                            <ListItemIcon>
+                                <Person/>
+                            </ListItemIcon>
+                            <ListItemText primary="Users"/>
                         </ListItemButton>
                     </ListItem>
                     <ListItem disablePadding>

@@ -52,7 +52,7 @@ exports.getUser = async (req, res) => {
 
 exports.newUser = async (req, res) => {
     try {
-        const {firstName, lastName, email, role, location} = req.body;
+        const {firstName, lastName, email, role, location, active} = req.body;
         if(!firstName || !lastName || !email || !role || !location) {
             return res.send({
                 message: "All fields required",
@@ -64,7 +64,7 @@ exports.newUser = async (req, res) => {
                 message: "User already exists",
             })
         }
-        const user = new userModel({firstName, lastName, email, role, location});
+        const user = new userModel({firstName, lastName, email, role, location, active});
         await user.save();
         return res.send({
             message: "User saved successfully",
@@ -83,7 +83,7 @@ exports.newUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
     try {
         const {id} = req.params;
-        const {firstName, lastName, email, role, location} = req.body;
+        const {firstName, lastName, email, role, location, active} = req.body;
         const user = await userModel.findByIdAndUpdate(id, req.body, {new: true});
         if (!user) {
             return res.send({
