@@ -29,6 +29,10 @@ const supportSchema = new schema({
     ticketStatus: {
         type: String,
         required: true,
+    },
+    archive: {
+        type: Boolean,
+        default: false,
     }
 }, {timestamps: true});
 

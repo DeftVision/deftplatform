@@ -14,9 +14,11 @@ import { Edit, Delete } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getStorage, ref, deleteObject } from 'firebase/storage';
+import { useNotification } from '../components/NotificationContext';
 
 export default function Documents() {
     const [documents, setDocuments] = useState([]);
+    const showNotification = useNotification();
 
     async function getDocuments() {
         try {
@@ -45,7 +47,6 @@ export default function Documents() {
     async function deleteDocument(documentId, uniqueFileName) {
         try {
             if (uniqueFileName) {
-                // Delete the file from Firebase Storage
                 const storage = getStorage();
                 const fileRef = ref(storage, `uploads/${uniqueFileName}`);
                 await deleteObject(fileRef);
@@ -59,14 +60,16 @@ export default function Documents() {
                 method: 'DELETE',
             });
 
+            const _response = await response.json();
             if (response.ok) {
                 setDocuments(documents.filter(document => document._id !== documentId));
+                showNotification(_response.message, 'success');
             } else {
-                const _response = await response.json();
                 console.error(_response.error);
+                showNotification(_response.message, 'error');
             }
         } catch (error) {
-            console.log(error);
+            showNotification('Error deleting document', 'error');
         }
     }
 

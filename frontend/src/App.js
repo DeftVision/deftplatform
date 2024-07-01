@@ -3,12 +3,13 @@ import { Box, Container, CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Routes, Route } from 'react-router-dom';
 import { Administration } from './administration/index';
-import { NavDrawer } from './components/index';
+import { NavDrawer, UserContext, PrivateRoutes } from './components/index';
 import { Dashboard, DashboardData } from './dashboard/index';
 import { Documents, DocumentForm } from './documents/index';
 import { Evaluations, EvaluationForm } from './evaluations/index';
 import { Announcements, AnnouncementForm } from './announcements/index';
-import { Help, Home, Settings } from './pages/index';
+import { Home, Settings } from './pages/index';
+import { Tickets, TicketForm } from './support/index';
 import { Users, UserForm } from './users/index';
 import Error from './pages/Error';
 import { useEffect, useState } from "react";
@@ -50,9 +51,8 @@ function App() {
     return (
         <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
             <CssBaseline />
-            {/*<Navigation toggleTheme={toggleTheme} theme={theme} />*/}
             <NavDrawer toggleTheme={toggleTheme} theme={theme} />
-            <Container sx={{ marginTop: 5 }}>
+            <Container sx={{ marginTop: 15 }}>
                 <Box>
                     <div className="App">
                         <Routes>
@@ -75,7 +75,9 @@ function App() {
 
                             <Route path="/administration" element={<Administration />} />
 
-                            <Route path="/help" element={<Help />} />
+                            <Route path="/tickets" element={<Tickets />} />
+                            <Route path="/ticket-form" element={<TicketForm newTicket/>} />
+                            <Route path="/edit-ticket/:id" element={<TicketForm />} />
 
                             <Route path="/users" element={<Users />} />
                             <Route path="/user-form" element={<UserForm newUser/>} />
