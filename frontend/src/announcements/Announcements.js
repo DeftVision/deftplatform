@@ -8,7 +8,8 @@ import {
     TableContainer,
     TableCell,
     Paper,
-    IconButton
+    IconButton,
+    Typography
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
@@ -69,6 +70,7 @@ export default function Announcements () {
 
     return (
         <>
+            <Typography>Announcements</Typography>
             <Box sx={{ display: 'flex', marginBottom: 4, textAlign: 'center' }}>
                 <Button component={Link} to="/announcement-form">Add New</Button>
             </Box>

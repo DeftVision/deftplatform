@@ -1,7 +1,5 @@
 const userModel = require ('../models/userModel');
 
-
-
 exports.getUsers = async (req, res) => {
     try {
         const users = await userModel.find({});
@@ -60,9 +58,7 @@ exports.newUser = async (req, res) => {
         }
         const existingUser = await userModel.findOne({email})
         if(existingUser) {
-            return res.send({
-                message: "User already exists",
-            })
+            return res.status(400).json({error: 'User already exists'});
         }
         const user = new userModel({firstName, lastName, email, role, location, active});
         await user.save();

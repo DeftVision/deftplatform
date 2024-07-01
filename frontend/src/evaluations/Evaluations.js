@@ -8,15 +8,18 @@ import {
     TableContainer,
     TableCell,
     Paper,
-    IconButton
+    IconButton, Typography
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useNotification } from '../components/NotificationContext';
 
 
 export default function Evaluations () {
     const [evaluations, setEvaluations] = useState([])
+    const showNotification = useNotification();
+
 
     async function getEvaluations () {
         try {
@@ -32,6 +35,7 @@ export default function Evaluations () {
                 setEvaluations(_response.evaluations);
             } else {
                 console.log(_response.error);
+                showNotification(_response.error, 'error');
             }
         } catch (error) {
             console.error(error);
@@ -47,9 +51,12 @@ export default function Evaluations () {
             const response = await fetch(`http://localhost:7000/api/eval/delete/${evaluationId}`, {
                 method: 'DELETE'
             });
-
+            const _response = await response.json();
             if(response.ok) {
                 setEvaluations(evaluations.filter(evaluation => evaluation._id !== evaluationId));
+                showNotification(_response.message, 'success');
+            } else {
+                showNotification(_response.error, 'error');
             }
         }
         catch (error) {
@@ -59,6 +66,7 @@ export default function Evaluations () {
 
     return (
         <>
+            <Typography>Evaluation</Typography>
             <Box sx={{ display: 'flex', marginBottom: 4, textAlign: 'center' }}>
                 <Button component={Link} to="/evaluation-form">Add New</Button>
             </Box>

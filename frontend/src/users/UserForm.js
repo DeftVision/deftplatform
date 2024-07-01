@@ -1,6 +1,7 @@
 import { Box, Button, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Switch, Typography, TextField } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import {useNotification} from "../components/NotificationContext";
 
 
 const form_default = {
@@ -15,6 +16,7 @@ const form_default = {
 
 export default function UserForm ({newUser}) {
     const [form, setForm] = useState(form_default);
+    const showNotification = useNotification();
     const {id} = useParams();
 
     useEffect(() => {
@@ -31,7 +33,7 @@ export default function UserForm ({newUser}) {
                 if(response.ok) {
                     const user = _response.user || {};
                     setForm({
-                        ...form_default,
+                        ...form,
                         ...user
                     })
                 } else {
@@ -46,9 +48,23 @@ export default function UserForm ({newUser}) {
         }
     }, [id]);
 
+    const validateFields = () => {
+        const requiredFields = ['firstName', 'lastName', 'email', 'role', 'location'];
+        for(let field of requiredFields) {
+            if(!form[field]) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if(!validateFields()) {
+            showNotification('All fields are required', 'error')
+            return;
+        }
 
         try {
             let url = `http://localhost:7000/api/user/new`;
@@ -69,12 +85,17 @@ export default function UserForm ({newUser}) {
             const _response = await response.json();
             if(response.ok) {
                 console.log(_response.message);
+                showNotification(_response.message, 'success')
             } else {
-                console.error(_response.error);
+                if (_response.error === 'User already exists') {
+                    showNotification('User already exists', 'error')
+                } else {
+                    showNotification(_response.error, 'error')
+                }
             }
-
         } catch (error) {
             console.error('Error', error)
+            showNotification('Error saving form', 'error')
         }
     }
 
@@ -87,18 +108,13 @@ export default function UserForm ({newUser}) {
     }
 
 
-
-
-
-
-
     return (
         <>
             <Box>
                 <Typography>User Form</Typography>
             </Box>
             <Box>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} noValidate>
                     <TextField
                         id="first-name"
                         type="text"
@@ -110,7 +126,6 @@ export default function UserForm ({newUser}) {
                         sx={{marginBottom: 3, marginTop: 3}}
                         value={form.firstName}
                         onChange={handleChange}
-                        required
                     />
 
                     <TextField
@@ -124,7 +139,6 @@ export default function UserForm ({newUser}) {
                         sx={{marginBottom: 3}}
                         value={form.lastName}
                         onChange={handleChange}
-                        required
                     />
 
                     <TextField
@@ -138,7 +152,6 @@ export default function UserForm ({newUser}) {
                         sx={{marginBottom: 3}}
                         value={form.email}
                         onChange={handleChange}
-                        required
                     />
 
                     <FormControl fullWidth sx={{marginBottom: 3}}>
@@ -168,7 +181,6 @@ export default function UserForm ({newUser}) {
                             value={form.location}
                             sx={{textAlign: 'start'}}
                             onChange={handleChange}
-                            noValidate
                         >
                             <MenuItem value="location 1">location 1</MenuItem>
                             <MenuItem value="location 2">Location 2</MenuItem>
