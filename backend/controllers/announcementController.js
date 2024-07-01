@@ -55,6 +55,7 @@ exports.newAnnouncement = async (req, res) => {
         if(!title || !subject || !content || !priority || !role) {
             return res.send({
                 message: 'All fields are required',
+
             })
         }
         const announcement = new announcementModel({title, subject, content, publish, priority, role});

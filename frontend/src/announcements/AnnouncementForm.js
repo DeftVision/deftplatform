@@ -1,6 +1,7 @@
 import { Box, Button, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Switch, Typography, TextField } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useNotification } from '../components/NotificationContext';
 
 
 const form_default = {
@@ -14,6 +15,7 @@ const form_default = {
 
 export default function AnnouncementForm ({newAnnouncement}) {
     const [form, setForm] = useState(form_default)
+    const showNotification = useNotification();
     const {id} = useParams();
 
     useEffect(() => {
@@ -27,7 +29,6 @@ export default function AnnouncementForm ({newAnnouncement}) {
                 });
 
                 const _response = await response.json();
-                console.log(_response);
                 if (response.ok) {
                     const announcement = _response.announcement || {};
                     setForm({
@@ -47,8 +48,22 @@ export default function AnnouncementForm ({newAnnouncement}) {
         }
     }, [id]);
 
+    const validateFields = () => {
+        const requiredFields = ['title', 'category', 'priority', 'role'];
+        for(let field of requiredFields) {
+            if(!form[field]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if(!validateFields()) {
+            showNotification('All fields are required', 'error')
+            return;
+        }
 
         let url = `http://localhost:7000/api/announce/new`;
         let method = 'POST';
@@ -58,18 +73,24 @@ export default function AnnouncementForm ({newAnnouncement}) {
             method = "PATCH"
         }
 
-        const response = await fetch(url, {
-            method: method,
-            body: JSON.stringify(form),
-            headers: {
-                "Content-Type": "application/json"
+        try {
+            const response = await fetch(url, {
+                method: method,
+                body: JSON.stringify(form),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            const _response = await response.json();
+            if(!response.ok) {
+                console.error(_response.error);
+                showNotification(_response.message || 'Error saving form', 'error')
+            } else {
+                console.log(_response.message);
+                showNotification(_response.message, 'success');
             }
-        })
-        const _response = await response.json();
-        if(response.ok) {
-            console.log(_response.message);
-        } else {
-            console.log(_response.error);
+        } catch (error) {
+            showNotification('Error saving form', 'error')
         }
     }
 
@@ -86,7 +107,7 @@ export default function AnnouncementForm ({newAnnouncement}) {
             <Box>
                 <Typography>Announcement Form</Typography>
 
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} noValidate>
                     <TextField
                         id="announcement-title"
                         type="text"

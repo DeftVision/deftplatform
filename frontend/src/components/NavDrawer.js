@@ -1,19 +1,26 @@
 import {
+    AppBar,
     Box,
     Button,
+    CssBaseline,
+    Divider,
     Drawer,
+    FormControlLabel,
     IconButton,
     List,
     ListItem,
     ListItemButton,
     ListItemText,
     ListItemIcon,
+    styled,
     Switch,
-    FormControlLabel, Icon
+    Toolbar,
 } from '@mui/material';
 import {
     Announcement,
     Brightness1,
+    ChevronLeft,
+    ChevronRight,
     Help,
     Home,
     Insights,
@@ -27,6 +34,9 @@ import {useState} from 'react';
 import {Link} from 'react-router-dom';
 
 const drawerWidth = 240;
+const DrawerHeader = styled('div')(({ theme }) => ({
+    display: 'flex',
+}))
 
 export default function NavDrawer({toggleTheme, theme}) {
     const [open, setOpen] = useState(false);
@@ -37,10 +47,21 @@ export default function NavDrawer({toggleTheme, theme}) {
 
 
     return (
-        <Box>
-            <IconButton onClick={toggleDrawer(true)}>
-                <Menu/>
-            </IconButton>
+        <Box sx={{display: 'flex'}}>
+            <CssBaseline />
+            <AppBar position="fixed" open={open}>
+                <Toolbar>
+                    <IconButton
+                        onClick={toggleDrawer(true)}
+                        sx={{
+                            marginRight: 5,
+                            ...(open && { display: 'none'})
+                        }}
+                    >
+                        <Menu/>
+                    </IconButton>
+                </Toolbar>
+            </AppBar>
 
             <Drawer
                 open={open}
@@ -96,7 +117,7 @@ export default function NavDrawer({toggleTheme, theme}) {
                         </ListItemButton>
                     </ListItem>
                     <ListItem disablePadding>
-                        <ListItemButton component={Link} to="/help">
+                        <ListItemButton component={Link} to="/tickets">
                             <ListItemIcon>
                                 <Help/>
                             </ListItemIcon>

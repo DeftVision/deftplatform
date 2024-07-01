@@ -13,17 +13,14 @@ import {
 import { Edit, Delete } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useNotification } from '../components/NotificationContext';
 
 
+export default function Tickets () {
+    const [tickets, setTickets] = useState([])
 
-export default function Announcements () {
-    const [announcements, setAnnouncements] = useState([])
-    const showNotification = useNotification();
-
-    async function getAnnouncements () {
+    async function getTickets () {
         try {
-            const response = await fetch(`http://localhost:7000/api/announce/announcements`, {
+            const response = await fetch(`http://localhost:7000/api/support/tickets`, {
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json",
@@ -31,12 +28,10 @@ export default function Announcements () {
             })
             const _response = await response.json();
 
-            if(response.ok && _response.announcements) {
-                setAnnouncements(_response.announcements);
-
+            if(response.ok && _response.tickets) {
+                setTickets(_response.tickets);
             } else {
                 console.log(_response.error);
-                showNotification(_response.error, 'error');
             }
         } catch (error) {
             console.error(error);
@@ -44,22 +39,17 @@ export default function Announcements () {
     }
 
     useEffect(() => {
-        getAnnouncements();
+        getTickets();
     }, []);
 
-    async function deleteAnnouncement(announcementId) {
+    async function deleteTicket(ticketId) {
         try {
-            const response = await fetch(`http://localhost:7000/api/announce/delete/${announcementId}`, {
+            const response = await fetch(`http://localhost:7000/api/support/delete/${ticketId}`, {
                 method: 'DELETE'
             });
 
-            const _response = await response.json();
-
             if(response.ok) {
-                setAnnouncements(announcements.filter(announcement => announcement._id !== announcementId));
-                showNotification(_response.message, 'success');
-            } else {
-                showNotification(_response.error, 'error');
+                setTickets(tickets.filter(ticket => ticket._id !== ticketId));
             }
         }
         catch (error) {
@@ -70,7 +60,7 @@ export default function Announcements () {
     return (
         <>
             <Box sx={{ display: 'flex', marginBottom: 4, textAlign: 'center' }}>
-                <Button component={Link} to="/announcement-form">Add New</Button>
+                <Button component={Link} to="/ticket-form">Add New</Button>
             </Box>
 
             <Box>
@@ -79,20 +69,22 @@ export default function Announcements () {
                         <TableHead>
                             <TableRow>
                                 <TableCell>Title</TableCell>
-                                <TableCell>Subject</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell>Urgency</TableCell>
                                 <TableCell>Action</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {announcements.map((announcement) => (
-                                <TableRow key={announcement._id}>
-                                    <TableCell>{announcement.title}</TableCell>
-                                    <TableCell>{announcement.subject}</TableCell>
+                            {tickets.map((ticket) => (
+                                <TableRow key={ticket._id}>
+                                    <TableCell>{ticket.title}</TableCell>
+                                    <TableCell>{ticket.ticketStatus}</TableCell>
+                                    <TableCell>{ticket.urgency}</TableCell>
                                     <TableCell>
-                                        <IconButton component={Link} to={`/edit-announcement/${announcement._id}`}>
+                                        <IconButton component={Link} to={`/edit-ticket/${ticket._id}`}>
                                             <Edit sx={{ color: 'dodgerblue' }} />
                                         </IconButton>
-                                        <IconButton onClick={() => deleteAnnouncement(announcement._id)}>
+                                        <IconButton onClick={() => deleteTicket(ticket._id)}>
                                             <Delete sx={{ color: 'dimgray' }} />
                                         </IconButton>
                                     </TableCell>

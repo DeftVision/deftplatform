@@ -1,10 +1,12 @@
-import { Box, Button, Typography, TextField, LinearProgress, styled } from '@mui/material';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
+import {Box, Button, LinearProgress, styled, TextField, Typography} from '@mui/material';
+import {deleteObject, getDownloadURL, getStorage, ref, uploadBytesResumable} from 'firebase/storage';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { app } from '../components/firebase';
+import {useParams} from 'react-router-dom';
+import {useEffect, useState} from 'react';
+import {v4 as uuidv4} from 'uuid';
+import { app } from '../components/firebase'
+
+
 
 const form_default = {
     title: "",
@@ -13,13 +15,13 @@ const form_default = {
     uniqueFileName: "",
 };
 
-export default function DocumentForm({ newDocument }) {
+export default function DocumentForm({newDocument}) {
     const [form, setForm] = useState(form_default);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploading, setUploading] = useState('default');
     const [fileName, setFileName] = useState('');
     const [file, setFile] = useState(null);
-    const { id } = useParams();
+    const {id} = useParams();
 
     const VisuallyHiddenInput = styled('input')({
         clip: 'rect(0 0 0 0)',
@@ -44,12 +46,13 @@ export default function DocumentForm({ newDocument }) {
 
             const _response = await response.json();
             if (response.ok) {
-                const { title, category, downloadUrl, uniqueFileName } = _response.document;
-                setForm({ title, category, downloadUrl, uniqueFileName });
+                const {title, category, downloadUrl, uniqueFileName} = _response.document;
+                setForm({title, category, downloadUrl, uniqueFileName});
             } else {
                 console.error('Error occurred while fetching document');
             }
         }
+
         if (!newDocument) {
             editDocument();
         }
@@ -116,7 +119,9 @@ export default function DocumentForm({ newDocument }) {
 
     };
 
+
     const saveToDb = async () => {
+
         let url = 'http://localhost:7000/api/docs/new/';
         let method = 'POST';
 
@@ -125,27 +130,33 @@ export default function DocumentForm({ newDocument }) {
             method = 'PATCH';
         }
 
-        const response = await fetch(url, {
-            method: method,
-            body: JSON.stringify(form),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        try {
+            const response = await fetch(url, {
+                method: method,
+                body: JSON.stringify(form),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
 
-        const _response = await response.json();
-        if (!response.ok) {
-            console.error(_response.error);
-        } else {
-            console.log(_response.message);
+            const _response = await response.json();
+            if (!response.ok) {
+                console.log(_response.error)
+            } else {
+                console.log(_response.message)
+            }
+
+        } catch (error) {
+            console.log('Error saving form')
         }
+
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (form.title && form.category) {
             try {
-                if(!newDocument && file) {
+                if (!newDocument && file) {
                     await deleteExistingFile(`uploads/${form.uniqueFileName}`);
                 }
                 await uploadFileToFirebase();
@@ -168,7 +179,7 @@ export default function DocumentForm({ newDocument }) {
 
     return (
         <Box>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate>
                 <Box>
                     <TextField
                         id="document-title"
@@ -177,7 +188,7 @@ export default function DocumentForm({ newDocument }) {
                         label="title"
                         fullWidth
                         autoComplete="document title"
-                        sx={{ marginBottom: 3 }}
+                        sx={{marginBottom: 3}}
                         value={form.title}
                         onChange={(e) => {
                             setForm({
@@ -193,7 +204,7 @@ export default function DocumentForm({ newDocument }) {
                         label="category"
                         fullWidth
                         autoComplete="document category"
-                        sx={{ marginBottom: 3 }}
+                        sx={{marginBottom: 3}}
                         value={form.category}
                         onChange={(e) => {
                             setForm({
@@ -203,11 +214,11 @@ export default function DocumentForm({ newDocument }) {
                         }}
                     />
                 </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 3 }}>
+                <Box sx={{display: 'flex', alignItems: 'center', marginBottom: 3}}>
                     <Button
                         component="label"
                         variant="outlined"
-                        startIcon={<CloudUploadIcon />}
+                        startIcon={<CloudUploadIcon/>}
                     >
                         UPLOAD
                         <VisuallyHiddenInput
@@ -215,13 +226,13 @@ export default function DocumentForm({ newDocument }) {
                             onChange={handleFileChange}
                         />
                     </Button>
-                    <Typography sx={{ marginLeft: 2 }}>
+                    <Typography sx={{marginLeft: 2}}>
                         {fileName}
                     </Typography>
                 </Box>
                 {uploading === "uploading" && (
-                    <Box sx={{ width: '100%', marginBottom: 3 }}>
-                        <LinearProgress variant='determinate' value={uploadProgress} />
+                    <Box sx={{width: '100%', marginBottom: 3}}>
+                        <LinearProgress variant='determinate' value={uploadProgress}/>
                     </Box>
                 )}
                 <Box>

@@ -43,7 +43,6 @@ const form_default = {
     foodScore: 0,
     appearanceScore: 0,
     serviceScore: 0,
-
     identifyManager: false,
     comments: ""
 }
@@ -64,7 +63,14 @@ const VisuallyHiddenInput = styled('input')({
 export default function EvaluationForm({newEvaluation}) {
     const [form, setForm] = useState(form_default);
     const [errors, setErrors] = useState({});
-    const {id} = useParams();
+    const {id} = useParams()
+
+    const fields = [
+        {
+            name: "sdfsd",
+            type: "slider",
+        }
+    ]
 
     useEffect(() => {
         async function editEvaluation() {
@@ -81,7 +87,7 @@ export default function EvaluationForm({newEvaluation}) {
                 if (response.ok) {
                     const evaluation = _response.evaluation || {};
                     setForm({
-                        ...form_default,
+                        ...form,
                         ...evaluation
                     })
                 } else {
@@ -104,7 +110,8 @@ export default function EvaluationForm({newEvaluation}) {
                 ...form,
                 [name]: type === 'checkbox' ? checked : value,
             })
-        } else if (typeof newValue === 'number') {
+        }
+        if (typeof newValue === 'number') {
             setForm(prevForm => ({
                 ...prevForm,
                 [e.target.ariaLabel]: newValue
@@ -400,7 +407,7 @@ return (
                         </Button>
                         <Typography>
                             {/*{fileName}*/}
-                            :
+                            filename
                         </Typography>
                     </Stack>
                 </Box>
