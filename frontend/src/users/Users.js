@@ -13,10 +13,12 @@ import {
 import { Edit, Delete } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import {useNotification} from "../components/NotificationContext";
 
 
 export default function Users () {
     const [users, setUsers] = useState([])
+    const showNotification = useNotification();
 
     async function getUsers () {
         try {
@@ -32,6 +34,7 @@ export default function Users () {
                 setUsers(_response.users);
             } else {
                 console.log(_response.error);
+                showNotification(_response.error, 'error');
             }
         } catch (error) {
             console.error(error);
@@ -50,10 +53,12 @@ export default function Users () {
 
             if(response.ok) {
                 setUsers(users.filter(user => user._id !== userId));
+                showNotification('User deleted successfully', 'success')
             }
         }
         catch (error) {
             console.error(error);
+            showNotification('Error deleting user', 'error');
         }
     }
 

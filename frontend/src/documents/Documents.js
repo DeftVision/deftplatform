@@ -8,7 +8,7 @@ import {
     TableContainer,
     TableCell,
     Paper,
-    IconButton
+    IconButton, Typography
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
@@ -75,6 +75,7 @@ export default function Documents() {
 
     return (
         <>
+            <Typography>Documents</Typography>
             <Box sx={{ display: 'flex', marginBottom: 4, textAlign: 'center' }}>
                 <Button component={Link} to="/document-form">Add New</Button>
             </Box>

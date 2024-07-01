@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import {useState, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
+import { useNotification } from '../components/NotificationContext';
 // bring in firebase shit...
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { v4 as uuidv4 } from 'uuid';
@@ -62,15 +63,10 @@ const VisuallyHiddenInput = styled('input')({
 
 export default function EvaluationForm({newEvaluation}) {
     const [form, setForm] = useState(form_default);
-    const [errors, setErrors] = useState({});
+    const showNotification = useNotification();
+    // const [errors, setErrors] = useState({});
     const {id} = useParams()
 
-    const fields = [
-        {
-            name: "sdfsd",
-            type: "slider",
-        }
-    ]
 
     useEffect(() => {
         async function editEvaluation() {
@@ -174,7 +170,6 @@ return (
                     InputLabelProps={{
                         shrink: true,
                     }}
-                    required
                 />
                 <FormControl fullWidth sx={{marginBottom: 3}}>
                     <InputLabel id="location-label" required>location</InputLabel>
@@ -205,8 +200,6 @@ return (
                     sx={{marginBottom: 3}}
                     value={form.evaluator}
                     onChange={handleChange}
-                    required
-                    noValidate
                 />
                 <TextField
                     id="cashier"
@@ -220,8 +213,6 @@ return (
                     sx={{marginBottom: 3}}
                     value={form.cashier}
                     onChange={handleChange}
-                    required
-                    noValidate
                 />
                 <FormControlLabel
                     control={<Switch
@@ -281,7 +272,6 @@ return (
                     value={form.wait}
                     onChange={handleChange}
                     inputProps={{min: 0, max: 120}}
-                    required
                 />
 
                 {/*<TextField
@@ -374,7 +364,6 @@ return (
                     sx={{marginBottom: 3}}
                     value={form.comments}
                     onChange={handleChange}
-                    required
                 />
 
                 {/*IMAGE TEXT FIELD*/}

@@ -49,7 +49,7 @@ export default function AnnouncementForm ({newAnnouncement}) {
     }, [id]);
 
     const validateFields = () => {
-        const requiredFields = ['title', 'category', 'priority', 'role'];
+        const requiredFields = ['title', 'subject', 'content', 'priority', 'role'];
         for(let field of requiredFields) {
             if(!form[field]) {
                 return false;

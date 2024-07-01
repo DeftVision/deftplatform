@@ -1,10 +1,12 @@
-import {Box, Button, LinearProgress, styled, TextField, Typography} from '@mui/material';
+import { Box, Button, LinearProgress, styled, TextField, Typography} from '@mui/material';
 import {deleteObject, getDownloadURL, getStorage, ref, uploadBytesResumable} from 'firebase/storage';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {useParams} from 'react-router-dom';
 import {useEffect, useState} from 'react';
 import {v4 as uuidv4} from 'uuid';
 import { app } from '../components/firebase'
+import { useNotification } from '../components/NotificationContext';
+
 
 
 
@@ -21,6 +23,7 @@ export default function DocumentForm({newDocument}) {
     const [uploading, setUploading] = useState('default');
     const [fileName, setFileName] = useState('');
     const [file, setFile] = useState(null);
+    const showNotification = useNotification();
     const {id} = useParams();
 
     const VisuallyHiddenInput = styled('input')({
@@ -57,6 +60,16 @@ export default function DocumentForm({newDocument}) {
             editDocument();
         }
     }, [id]);
+
+    const validateFields = () => {
+        const requiredFields = ['title', 'category'];
+        for(let field of requiredFields) {
+            if(!form[field]) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -96,6 +109,7 @@ export default function DocumentForm({newDocument}) {
                 (error) => {
                     console.error('upload failed', error);
                     setUploading('error');
+                    showNotification('Upload failed', error);
                 }
             );
 
@@ -109,9 +123,11 @@ export default function DocumentForm({newDocument}) {
                     uniqueFileName,
                 }));
                 setUploading('success');
+                showNotification('Upload successfully', 'success');
             } catch (error) {
                 console.error('Failed to get download URL: ', error);
                 setUploading('error');
+                showNotification('Failed to get download URL', 'error');
             }
         } else {
             throw new Error('No file selected');
@@ -142,18 +158,27 @@ export default function DocumentForm({newDocument}) {
             const _response = await response.json();
             if (!response.ok) {
                 console.log(_response.error)
+                showNotification(_response.message || 'Error saving form', 'error')
             } else {
                 console.log(_response.message)
+                showNotification(_response.message, 'success');
             }
 
         } catch (error) {
             console.log('Error saving form')
+            showNotification('Error saving form', 'error');
         }
 
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if(!validateFields()) {
+            showNotification('All fields are required', 'error')
+            return;
+        }
+
         if (form.title && form.category) {
             try {
                 if (!newDocument && file) {
@@ -165,8 +190,10 @@ export default function DocumentForm({newDocument}) {
                 }
             } catch (error) {
                 console.error('failed to upload file or save document', error);
+                showNotification('Failed to upload file or save document', 'error');
             }
         } else {
+            showNotification('All fields are required', 'error');
             console.error('All fields required!!!');
         }
     };
@@ -179,6 +206,7 @@ export default function DocumentForm({newDocument}) {
 
     return (
         <Box>
+            <Typography>Document Form</Typography>
             <form onSubmit={handleSubmit} noValidate>
                 <Box>
                     <TextField
@@ -188,7 +216,7 @@ export default function DocumentForm({newDocument}) {
                         label="title"
                         fullWidth
                         autoComplete="document title"
-                        sx={{marginBottom: 3}}
+                        sx={{marginBottom: 3, marginTop: 3 }}
                         value={form.title}
                         onChange={(e) => {
                             setForm({
