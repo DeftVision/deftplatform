@@ -149,7 +149,7 @@ export default function EvaluationForm({newEvaluation}) {
             await deleteObject(fileRef);
             console.log(`File ${filePath} deleted successfully`);
         } catch (error) {
-            console.log('Failed to delete document', error);
+            console.log('Failed to delete evaluation', error);
         }
     }
 
