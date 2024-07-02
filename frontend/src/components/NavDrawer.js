@@ -26,6 +26,7 @@ import {
     Insights,
     Leaderboard,
     LocalLibrary,
+    Login,
     Menu,
     Person,
     WbSunny
@@ -122,6 +123,14 @@ export default function NavDrawer({toggleTheme, theme}) {
                                 <Help/>
                             </ListItemIcon>
                             <ListItemText primary="Support"/>
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                        <ListItemButton component={Link} to="/login">
+                            <ListItemIcon>
+                                <Login/>
+                            </ListItemIcon>
+                            <ListItemText primary="Login"/>
                         </ListItemButton>
                     </ListItem>
                     <ListItem>
