@@ -1,4 +1,5 @@
 const evaluationModel = require("../models/evaluationModel");
+const documentModel = require("../models/documentModel");
 
 
 
@@ -102,12 +103,16 @@ exports.updateEvaluation = async (req, res) => {
 exports.deleteEvaluation = async (req, res) => {
     try {
         const {id} = req.params;
-        const evaluation = await evaluationModel.findById(id);
-        if(!evaluation) {
-            return res.status(404).json({error: 'Evaluation not found'});
+        const evaluation = await evaluationModel.findByIdAndDelete(id);
+        if (evaluation) {
+            return res.send({
+                message: "Evaluation was deleted successfully",
+            })
+        } else {
+            return res.send({
+                message: "Deleting evaluation failed!!."
+            })
         }
-        res.json({message: 'evaluation was deleted successfully', filePath: evaluation.uniqueFileName});
-        await evaluation.findByIdAndDelete(id)
     }
     catch (error) {
         return res.send({

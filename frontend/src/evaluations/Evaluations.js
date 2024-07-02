@@ -45,19 +45,26 @@ export default function Evaluations () {
         getEvaluations();
     }, []);
 
-    async function deleteEvaluation(evaluationId, filePath) {
+    async function deleteEvaluation(evaluationId, uniqueFileName) {
         try {
             // Delete file from Firebase storage
-            if (filePath) {
+            if (uniqueFileName) {
                 const storage = getStorage();
-                const fileRef = ref(storage, filePath);
-                await deleteObject(fileRef);
-                console.log(`File ${filePath} deleted successfully`);
+                const fileRef = ref(storage, `uploads/${uniqueFileName}`);
+                try {
+                    await deleteObject(fileRef);
+                } catch (error) {
+                    console.log(error);
+
+                }
             }
 
             // Delete evaluation record from backend
             const response = await fetch(`http://localhost:7000/api/eval/delete/${evaluationId}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    "Content-Type": "application/json",
+                }
             });
             const _response = await response.json();
             if(response.ok) {
@@ -68,7 +75,6 @@ export default function Evaluations () {
             }
         }
         catch (error) {
-            console.error('Error deleting evaluation or file:', error);
             showNotification('Error deleting evaluation or file', 'error');
         }
     }
