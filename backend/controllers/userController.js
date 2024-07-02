@@ -1,4 +1,5 @@
 const userModel = require ('../models/userModel');
+const bcrypt = require("bcrypt");
 
 exports.getUsers = async (req, res) => {
     try {
@@ -50,8 +51,8 @@ exports.getUser = async (req, res) => {
 
 exports.newUser = async (req, res) => {
     try {
-        const {firstName, lastName, email, role, location, active} = req.body;
-        if(!firstName || !lastName || !email || !role || !location) {
+        const {firstName, lastName, email, role, location, password, active} = req.body;
+        if(!firstName || !lastName || !email || !role || !location || !password) {
             return res.send({
                 message: "All fields required",
             })
@@ -60,7 +61,8 @@ exports.newUser = async (req, res) => {
         if(existingUser) {
             return res.status(400).json({error: 'User already exists'});
         }
-        const user = new userModel({firstName, lastName, email, role, location, active});
+        const hashedPassword = await bcrypt.hash(password, 14)
+        const user = new userModel({firstName, lastName, email, role, location, password: hashedPassword, active});
         await user.save();
         return res.send({
             message: "User saved successfully",
@@ -119,6 +121,36 @@ exports.deleteUser = async (req, res) => {
         console.error(error);
         return res.send({
             message: 'Error deleting user',
+            error: error,
+        })
+    }
+}
+
+exports.login = async (req, res) => {
+    try {
+        const {email, password} = req.body;
+        if(!email || !password) {
+            return res.send({
+                message: "Both fields are required",
+            })
+        }
+        const user = await userModel.findOne({email});
+        if(!user) {
+            return res.send({
+                message: "User is not registered",
+            })
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if(!isMatch) {
+            return res.send({
+                message: "User does not match",
+            })
+        }
+    } catch (error) {
+        console.error(error);
+        return res.send({
+            message: "Error: callback error",
             error: error,
         })
     }

@@ -8,7 +8,7 @@ import {
     TableContainer,
     TableCell,
     Paper,
-    IconButton
+    IconButton, Typography
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
@@ -59,6 +59,7 @@ export default function Tickets () {
 
     return (
         <>
+            <Typography>Support Log</Typography>
             <Box sx={{ display: 'flex', marginBottom: 4, textAlign: 'center' }}>
                 <Button component={Link} to="/ticket-form">Add New</Button>
             </Box>

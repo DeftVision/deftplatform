@@ -3,6 +3,7 @@ import { Box, Container, CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Routes, Route } from 'react-router-dom';
 import { Administration } from './administration/index';
+import { Login } from './authentication/index'
 import { NavDrawer, UserContext, PrivateRoutes } from './components/index';
 import { Dashboard, DashboardData } from './dashboard/index';
 import { Documents, DocumentForm } from './documents/index';
@@ -82,6 +83,8 @@ function App() {
                             <Route path="/users" element={<Users />} />
                             <Route path="/user-form" element={<UserForm newUser/>} />
                             <Route path="/edit-user/:id" element={<UserForm />} />
+
+                            <Route path="/login" element={<Login />} />
 
                             <Route path="/settings" element={<Settings />} />
                             <Route path="*" element={<Error />} />
