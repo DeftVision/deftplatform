@@ -88,7 +88,7 @@ export default function TicketForm({newTicket}) {
             <Box>
                 <Typography>Support Tickets</Typography>
                 <Typography sx={{textAlign: 'start'}}>Ticket Number: </Typography>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} noValidate>
                     <TextField
                         id="support-ticketId"
                         type="text"
@@ -129,7 +129,7 @@ export default function TicketForm({newTicket}) {
                     />
 
                     <FormControl fullWidth sx={{marginBottom: 3}}>
-                        <InputLabel id="location-label" required>location</InputLabel>
+                        <InputLabel id="location-label">location</InputLabel>
                         <Select
                             labelId="location-label"
                             id="location"
@@ -138,7 +138,6 @@ export default function TicketForm({newTicket}) {
                             value={form.location}
                             sx={{textAlign: 'start'}}
                             onChange={handleChange}
-                            noValidate
                         >
                             <MenuItem value="location 1">location 1</MenuItem>
                             <MenuItem value="location 2">Location 2</MenuItem>
@@ -157,7 +156,6 @@ export default function TicketForm({newTicket}) {
                         sx={{marginBottom: 3}}
                         value={form.email}
                         onChange={handleChange}
-                        required
                     />
 
                     <FormControl fullWidth sx={{marginBottom: 3}}>
