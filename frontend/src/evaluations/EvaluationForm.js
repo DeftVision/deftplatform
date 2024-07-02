@@ -3,8 +3,8 @@ import {
     Button,
     FormControl,
     FormControlLabel,
-    Input,
     InputLabel,
+    LinearProgress,
     MenuItem,
     Select,
     Slider,
@@ -14,12 +14,12 @@ import {
     TextField,
     Typography
 } from '@mui/material';
-import {useState, useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
-import { useNotification } from '../components/NotificationContext';
-// bring in firebase shit...
+import {useNotification} from '../components/NotificationContext';
+import {deleteObject, getDownloadURL, getStorage, ref, uploadBytesResumable} from 'firebase/storage';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 
 const getCurrentDateTime = () => {
     const now = new Date();
@@ -60,11 +60,13 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
 });
 
-
 export default function EvaluationForm({newEvaluation}) {
     const [form, setForm] = useState(form_default);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [uploading, setUploading] = useState('default');
+    const [fileName, setFileName] = useState('');
+    const [file, setFile] = useState(null);
     const showNotification = useNotification();
-    // const [errors, setErrors] = useState({});
     const {id} = useParams()
 
 
@@ -87,10 +89,10 @@ export default function EvaluationForm({newEvaluation}) {
                         ...evaluation
                     })
                 } else {
-                    console.log(_response.error);
+                    showNotification(_response.error, 'error');
                 }
             } catch (error) {
-                console.error('Error occurred while fetching evaluation', error);
+                showNotification('Error occurred while fetching evaluation', 'error');
             }
         }
 
@@ -98,6 +100,16 @@ export default function EvaluationForm({newEvaluation}) {
             editEvaluation();
         }
     }, [id]);
+
+    const validateFields = () => {
+        const requiredFields = ['visitDateTime', 'location', 'evaluator', 'cashier', 'wait', 'comments']
+        for (let field of requiredFields) {
+            if (!form[field]) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     const handleChange = (e, newValue) => {
         const {name, value, type, checked} = e.target;
@@ -122,298 +134,339 @@ export default function EvaluationForm({newEvaluation}) {
         })
     }
 
-
-const handleSubmit = async (e) => {
-    e.preventDefault();
-    let url = `http://localhost:7000/api/eval/new`
-    let method = 'POST';
-
-    if (!newEvaluation) {
-        url = `http://localhost:7000/api/eval/update/${id}`
-        method = "PATCH";
-    }
-
-    const response = await fetch(url, {
-        method: method,
-        body: JSON.stringify(form),
-        headers: {
-            "Content-Type": "application/json"
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            setFileName(selectedFile.name);
+            setFile(selectedFile);
         }
-    })
-    const _response = await response.json();
-    if (response.ok) {
-        console.log(_response.message);
-    } else {
-        console.log(_response.error);
     }
-}
+
+    const deleteExistingFile = async (filePath) => {
+        const storage = getStorage();
+        const fileRef = ref(storage, filePath);
+        try {
+            await deleteObject(fileRef);
+            console.log(`File ${filePath} deleted successfully`);
+        } catch (error) {
+            console.log('Failed to delete document', error);
+        }
+    }
+
+    const uploadFileToFirebase = async () => {
+        if (file) {
+            const uniqueFileName = `${uuidv4()}-${file.name}`
+            const storage = getStorage();
+            const storageRef = ref(storage, `uploads/${uniqueFileName}`);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            setUploading('uploading');
+
+            uploadTask.on(
+                'state_changed',
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    setUploadProgress(progress);
+                },
+                (error) => {
+                    console.error('upload failed', error);
+                    setUploading('error');
+                    showNotification('Upload failed', error);
+                },
+                async () => {
+                    try {
+                        const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+                        setForm((prevForm) => ({
+                            ...prevForm,
+                            downloadUrl,
+                            uniqueFileName,
+                        }));
+                        setUploading('success');
+                        showNotification('Upload successfully', 'success');
+                    } catch (error) {
+                        setUploading('error');
+                        showNotification('Failed to get download URL', 'error');
+                    }
+                }
+            );
+        } else {
+            throw new Error('No file selected');
+        }
+    };
+
+    const saveToDb = async () => {
+
+        let url = 'http://localhost:7000/api/eval/new/';
+        let method = 'POST';
+
+        if (!newEvaluation) {
+            url = `http://localhost:7000/api/eval/update/${id}`;
+            method = 'PATCH';
+        }
+
+        try {
+            const response = await fetch(url, {
+                method: method,
+                body: JSON.stringify(form),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const _response = await response.json();
+            if (!response.ok) {
+                showNotification(_response.message || 'Error saving form', 'error')
+            } else {
+                showNotification(_response.message, 'success');
+            }
+
+        } catch (error) {
+            showNotification('Error saving form', 'error');
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!validateFields()) {
+            showNotification('Missing required fields', 'error');
+            return;
+        }
+
+        try {
+            if (file) {
+                if (!newEvaluation && form.uniqueFileName) {
+                    await deleteExistingFile(`uploads/${form.uniqueFileName}`);
+                }
+                await uploadFileToFirebase();
+            } else {
+                await saveToDb();
+            }
+        } catch (error) {
+            showNotification('Failed to upload file or save evaluation', 'error');
+        }
+    };
+
+    useEffect(() => {
+        if (uploading === 'success') {
+            saveToDb();
+        }
+    }, [uploading])
 
 
-return (
-    <>
-        <Box>
-            <Typography>Evaluation Form</Typography>
-        </Box>
-        <Box>
-            <form onSubmit={handleSubmit}>
-                <TextField
-                    id="visit-date-time"
-                    type="datetime-local"
-                    variant="outlined"
-                    label="Visit DateTime"
-                    name="visitDateTime"
-                    fullWidth
-                    autoComplete="visit-date-time"
-                    sx={{marginBottom: 3, marginTop: 3}}
-                    value={form.visitDateTime}
-                    onChange={handleChange}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                />
-                <FormControl fullWidth sx={{marginBottom: 3}}>
-                    <InputLabel id="location-label" required>location</InputLabel>
-                    <Select
-                        labelId="location-label"
-                        id="location"
-                        label="Location"
-                        name="location"
-                        value={form.location}
-                        sx={{textAlign: 'start'}}
+    return (
+        <>
+            <Box>
+                <Typography>Evaluation Form</Typography>
+            </Box>
+            <Box>
+                <form onSubmit={handleSubmit}>
+                    <TextField
+                        id="visit-date-time"
+                        type="datetime-local"
+                        variant="outlined"
+                        label="Visit DateTime"
+                        name="visitDateTime"
+                        fullWidth
+                        autoComplete="visit-date-time"
+                        sx={{marginBottom: 3, marginTop: 3}}
+                        value={form.visitDateTime}
                         onChange={handleChange}
-                        noValidate
-                    >
-                        <MenuItem value="location 1">location 1</MenuItem>
-                        <MenuItem value="location 2">Location 2</MenuItem>
-                        <MenuItem value="location 3">Location 3</MenuItem>
-                    </Select>
-                </FormControl>
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                    />
+                    <FormControl fullWidth sx={{marginBottom: 3}}>
+                        <InputLabel id="location-label">location</InputLabel>
+                        <Select
+                            labelId="location-label"
+                            id="location"
+                            label="Location"
+                            name="location"
+                            value={form.location}
+                            sx={{textAlign: 'start'}}
+                            onChange={handleChange}
+                        >
+                            <MenuItem value="location 1">location 1</MenuItem>
+                            <MenuItem value="location 2">Location 2</MenuItem>
+                            <MenuItem value="location 3">Location 3</MenuItem>
+                        </Select>
+                    </FormControl>
 
-                <TextField
-                    id="evaluation-evaluator"
-                    type="text"
-                    variant="outlined"
-                    label="evaluator"
-                    fullWidth
-                    name="evaluator"
-                    autoComplete="evaluation evaluator"
-                    sx={{marginBottom: 3}}
-                    value={form.evaluator}
-                    onChange={handleChange}
-                />
-                <TextField
-                    id="cashier"
-                    type="text"
-                    variant="outlined"
-                    label="cashier"
-                    name="cashier"
-                    multiline
-                    fullWidth
-                    autoComplete="cashier-name"
-                    sx={{marginBottom: 3}}
-                    value={form.cashier}
-                    onChange={handleChange}
-                />
-                <FormControlLabel
-                    control={<Switch
-                        checked={form.greeting}
-                        name="greeting"
-                        onChange={handleChange}
-                    />}
-                    label="Greeting"
-                    sx={{marginBottom: 3}}
-                />
-                <FormControlLabel
-                    control={<Switch
-                        checked={form.repeatOrder}
-                        name="repeatOrder"
-                        onChange={handleChange}
-                    />}
-                    label="Repeat Order"
-                    sx={{marginBottom: 3}}
-                />
-                <FormControlLabel
-                    control={<Switch
-                        checked={form.upsell}
-                        name="upsell"
-                        onChange={handleChange}
-                    />}
-                    label="Upsell"
-                    sx={{marginBottom: 3}}
-                />
-                <FormControlLabel
-                    control={<Switch
-                        checked={form.patio}
-                        name="patio"
-                        onChange={handleChange}
-                    />}
-                    label="Patio"
-                    sx={{marginBottom: 3}}
-                />
-                <FormControlLabel
-                    control={<Switch
-                        checked={form.identifyManager}
-                        name="identifyManager"
-                        onChange={handleChange}
-                    />}
-                    label="Identify Manager"
-                    sx={{marginBottom: 3}}
-                />
-
-                <TextField
-                    id="wait-food"
-                    type="number"
-                    variant="outlined"
-                    label="wait [in minutes]"
-                    name="wait"
-                    fullWidth
-                    autoComplete="wait-food"
-                    sx={{marginBottom: 3}}
-                    value={form.wait}
-                    onChange={handleChange}
-                    inputProps={{min: 0, max: 120}}
-                />
-
-                {/*<TextField
-                        id="food-score"
+                    <TextField
+                        id="evaluation-evaluator"
                         type="text"
                         variant="outlined"
-                        label="food score"
-                        name="foodScore"
+                        label="evaluator"
                         fullWidth
-                        autoComplete="food-score"
-                        sx={{ marginBottom: 3}}
-                        value={form.foodScore}
+                        name="evaluator"
+                        autoComplete="evaluation evaluator"
+                        sx={{marginBottom: 3}}
+                        value={form.evaluator}
                         onChange={handleChange}
                     />
                     <TextField
-                    id="appearance-score"
-                    type="text"
-                    variant="outlined"
-                    label="appearance score"
-                    name="appearanceScore"
-                    fullWidth
-                    autoComplete="appearance-score"
-                    sx={{marginBottom: 3, marginTop: 3}}
-                    value={form.appearanceScore}
-                    onChange={handleChange}
-                />
-
-                <TextField
-                    id="service-score"
-                    type="text"
-                    variant="outlined"
-                    label="service score"
-                    name="serviceScore"
-                    fullWidth
-                    autoComplete="service-score"
-                    sx={{marginBottom: 3}}
-                    value={form.serviceScore}
-                    onChange={handleChange}
-                />*/}
-
-                <Stack spacing={1} sx={{ marginBottom: 3 }}>
-                    <Typography gutterBottom sx={{ textAlign: 'start' }}>Food Score:</Typography>
-                    <Slider
-                        id="food-score"
-                        name="foodScore"
-                        valueLabelDisplay="auto"
-                        value={form.foodScore}
-                        onChange={handleSliderChange('foodScore')}
-                        min={0}
-                        max={10}
+                        id="cashier"
+                        type="text"
+                        variant="outlined"
+                        label="cashier"
+                        name="cashier"
+                        multiline
+                        fullWidth
+                        autoComplete="cashier-name"
+                        sx={{marginBottom: 3}}
+                        value={form.cashier}
+                        onChange={handleChange}
                     />
-                </Stack>
-
-                <Stack spacing={1} sx={{ marginBottom: 3 }}>
-                    <Typography gutterBottom sx={{ textAlign: 'start' }}>Appearance Score</Typography>
-                    <Slider
-                        id="appearance-score"
-                        name="appearanceScore"
-                        valueLabelDisplay="auto"
-                        value={form.appearanceScore}
-                        onChange={handleSliderChange('appearanceScore')}
-                        min={0}
-                        max={10}
+                    <FormControlLabel
+                        control={<Switch
+                            checked={form.greeting}
+                            name="greeting"
+                            onChange={handleChange}
+                        />}
+                        label="Greeting"
+                        sx={{marginBottom: 3}}
                     />
-                </Stack>
-
-                <Stack spacing={1} sx={{ marginBottom: 3 }}>
-                    <Typography gutterBottom sx={{ textAlign: 'start' }}>Service Score</Typography>
-                    <Slider
-                        id="service-score"
-                        name="serviceScore"
-                        valueLabelDisplay="auto"
-                        value={form.serviceScore}
-                        onChange={handleSliderChange('serviceScore')}
-                        min={0}
-                        max={10}
+                    <FormControlLabel
+                        control={<Switch
+                            checked={form.repeatOrder}
+                            name="repeatOrder"
+                            onChange={handleChange}
+                        />}
+                        label="Repeat Order"
+                        sx={{marginBottom: 3}}
                     />
-                </Stack>
+                    <FormControlLabel
+                        control={<Switch
+                            checked={form.upsell}
+                            name="upsell"
+                            onChange={handleChange}
+                        />}
+                        label="Upsell"
+                        sx={{marginBottom: 3}}
+                    />
+                    <FormControlLabel
+                        control={<Switch
+                            checked={form.patio}
+                            name="patio"
+                            onChange={handleChange}
+                        />}
+                        label="Patio"
+                        sx={{marginBottom: 3}}
+                    />
+                    <FormControlLabel
+                        control={<Switch
+                            checked={form.identifyManager}
+                            name="identifyManager"
+                            onChange={handleChange}
+                        />}
+                        label="Identify Manager"
+                        sx={{marginBottom: 3}}
+                    />
 
-                <TextField
-                    id="comments"
-                    type="text"
-                    variant="outlined"
-                    label="comments"
-                    name="comments"
-                    multiline
-                    rows={4}
-                    fullWidth
-                    autoComplete="comments"
-                    sx={{marginBottom: 3}}
-                    value={form.comments}
-                    onChange={handleChange}
-                />
+                    <TextField
+                        id="wait-food"
+                        type="number"
+                        variant="outlined"
+                        label="wait [in minutes]"
+                        name="wait"
+                        fullWidth
+                        autoComplete="wait-food"
+                        sx={{marginBottom: 3}}
+                        value={form.wait}
+                        onChange={handleChange}
+                        inputProps={{min: 0, max: 120}}
+                    />
 
-                {/*IMAGE TEXT FIELD*/}
-                {/*<TextField
-                    id="image"
-                    type="text"
-                    variant="outlined"
-                    label="image"
-                    name="image"
-                    fullWidth
-                    autoComplete="image"
-                    sx={{marginBottom: 3}}
-                    value={form.image}
-                    onChange={handleChange}
-                />*/}
+                    <Stack spacing={1} sx={{marginBottom: 3}}>
+                        <Typography gutterBottom sx={{textAlign: 'start'}}>Food Score:</Typography>
+                        <Slider
+                            id="food-score"
+                            name="foodScore"
+                            valueLabelDisplay="auto"
+                            value={form.foodScore}
+                            onChange={handleSliderChange('foodScore')}
+                            min={0}
+                            max={10}
+                        />
+                    </Stack>
 
+                    <Stack spacing={1} sx={{marginBottom: 3}}>
+                        <Typography gutterBottom sx={{textAlign: 'start'}}>Appearance Score</Typography>
+                        <Slider
+                            id="appearance-score"
+                            name="appearanceScore"
+                            valueLabelDisplay="auto"
+                            value={form.appearanceScore}
+                            onChange={handleSliderChange('appearanceScore')}
+                            min={0}
+                            max={10}
+                        />
+                    </Stack>
 
-                <Box>
-                    <Stack direction="row" spacing={2} sx={{marginBottom: 5, justifyContent: 'center', alignItems: 'center'}}>
+                    <Stack spacing={1} sx={{marginBottom: 3}}>
+                        <Typography gutterBottom sx={{textAlign: 'start'}}>Service Score</Typography>
+                        <Slider
+                            id="service-score"
+                            name="serviceScore"
+                            valueLabelDisplay="auto"
+                            value={form.serviceScore}
+                            onChange={handleSliderChange('serviceScore')}
+                            min={0}
+                            max={10}
+                        />
+                    </Stack>
+
+                    <TextField
+                        id="comments"
+                        type="text"
+                        variant="outlined"
+                        label="comments"
+                        name="comments"
+                        multiline
+                        rows={4}
+                        fullWidth
+                        autoComplete="comments"
+                        sx={{marginBottom: 3}}
+                        value={form.comments}
+                        onChange={handleChange}
+                    />
+                    <Stack direction="row" spacing={2}
+                           sx={{marginBottom: 5, justifyContent: 'center', alignItems: 'center'}}>
                         <Button
                             component="label"
                             variant="outlined"
-                            startIcon={<CloudUploadIcon />}
+                            startIcon={<CloudUploadIcon/>}
                         >
                             UPLOAD
                             <VisuallyHiddenInput
                                 type="file"
-                                // onChange={handleFileChange}
+                                onChange={handleFileChange}
                             />
                         </Button>
-                        <Typography>
-                            {/*{fileName}*/}
-                            filename
+                        <Typography sx={{marginLeft: 2}}>
+                            {fileName}
                         </Typography>
                     </Stack>
-                </Box>
-
-                <Box>
-                    <Button
-                        id="submit-button"
-                        variant="outlined"
-                        type="submit"
-                    >
-                        SAVE
-                    </Button>
-                </Box>
-            </form>
-        </Box>
-    </>
-);
+                    {uploading === "uploading" && (
+                        <Box sx={{width: '100%', marginBottom: 3}}>
+                            <LinearProgress variant='determinate' value={uploadProgress}/>
+                        </Box>
+                    )}
+                    <Box>
+                        <Button
+                            id="submit-button"
+                            variant="outlined"
+                            type="submit"
+                            sx={{marginBottom: 5}}
+                        >
+                            SAVE
+                        </Button>
+                    </Box>
+                </form>
+            </Box>
+        </>
+    );
 }
 ;
 

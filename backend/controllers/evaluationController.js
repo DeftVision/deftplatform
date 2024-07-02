@@ -51,14 +51,14 @@ exports.getEvaluation = async (req, res) => {
 
 exports.newEvaluation = async (req, res) => {
     try {
-        const {visitDateTime, location, evaluator, cashier, greeting, repeatOrder, upsell, patio, wait, foodScore, appearanceScore, serviceScore, image, identifyManager, comments} = req.body;
-        if(!visitDateTime || !evaluator || !location || !cashier || !wait || !foodScore || !appearanceScore || !serviceScore || !image || !comments) {
+        const {visitDateTime, location, evaluator, cashier, greeting, repeatOrder, upsell, patio, wait, foodScore, appearanceScore, serviceScore, uniqueFileName, downloadUrl, identifyManager, comments} = req.body;
+        if(!visitDateTime || !evaluator || !location || !cashier || !wait || !foodScore || !appearanceScore || !serviceScore || !uniqueFileName || !downloadUrl || !comments) {
             return res.send({
                 message: 'Complete required fields',
             })
         }
 
-        const evaluation = new evaluationModel({visitDateTime, location, evaluator, cashier, greeting, repeatOrder, upsell, patio, wait, foodScore, appearanceScore, serviceScore, image, identifyManager, comments});
+        const evaluation = new evaluationModel({visitDateTime, location, evaluator, cashier, greeting, repeatOrder, upsell, patio, wait, foodScore, appearanceScore, serviceScore, uniqueFileName, downloadUrl, identifyManager, comments});
         await evaluation.save();
         return res.send({
             message: 'Evaluation was saved successfully',
@@ -77,7 +77,7 @@ exports.newEvaluation = async (req, res) => {
 exports.updateEvaluation = async (req, res) => {
     try {
         const {id} = req.params;
-        const {visitDateTime, location, evaluator, cashier, greeting, repeatOrder, upsell, patio, wait, foodScore, appearanceScore, serviceScore, image, identifyManager, comments} = req.body;
+        const {visitDateTime, location, evaluator, cashier, greeting, repeatOrder, upsell, patio, wait, foodScore, appearanceScore, serviceScore, uniqueFileName, downloadUrl, identifyManager, comments} = req.body;
         const evaluation = await evaluationModel.findByIdAndUpdate(id, req.body, {new: true});
         if (!evaluation) {
             return res.send({
@@ -102,19 +102,14 @@ exports.updateEvaluation = async (req, res) => {
 exports.deleteEvaluation = async (req, res) => {
     try {
         const {id} = req.params;
-        const evaluation = await evaluationModel.findByIdAndDelete(id);
-        if(evaluation) {
-            return res.send({
-                message: 'Evaluation was deleted successfully',
-            })
-        } else {
-            return res.send({
-                message: 'Deleting evaluation failed',
-            })
+        const evaluation = await evaluationModel.findById(id);
+        if(!evaluation) {
+            return res.status(404).json({error: 'Evaluation not found'});
         }
+        res.json({message: 'evaluation was deleted successfully', filePath: evaluation.uniqueFileName});
+        await evaluation.findByIdAndDelete(id)
     }
     catch (error) {
-        console.log(error);
         return res.send({
             message: 'delete evaluation callback error',
             error: error

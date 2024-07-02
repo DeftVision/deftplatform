@@ -6,7 +6,6 @@ const form_default = {
     ticketId: "",
     title: "",
     description: "",
-    location: "",
     email: "",
     urgency: "",
     ticketStatus: "",
@@ -127,23 +126,6 @@ export default function TicketForm({newTicket}) {
                         value={form.description}
                         onChange={handleChange}
                     />
-
-                    <FormControl fullWidth sx={{marginBottom: 3}}>
-                        <InputLabel id="location-label">location</InputLabel>
-                        <Select
-                            labelId="location-label"
-                            id="location"
-                            label="Location"
-                            name="location"
-                            value={form.location}
-                            sx={{textAlign: 'start'}}
-                            onChange={handleChange}
-                        >
-                            <MenuItem value="location 1">location 1</MenuItem>
-                            <MenuItem value="location 2">Location 2</MenuItem>
-                            <MenuItem value="location 3">Location 3</MenuItem>
-                        </Select>
-                    </FormControl>
 
                     <TextField
                         id="email"
