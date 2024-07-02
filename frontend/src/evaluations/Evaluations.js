@@ -14,12 +14,11 @@ import { Edit, Delete } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useNotification } from '../components/NotificationContext';
-
+import { getStorage, ref, deleteObject } from 'firebase/storage';
 
 export default function Evaluations () {
-    const [evaluations, setEvaluations] = useState([])
+    const [evaluations, setEvaluations] = useState([]);
     const showNotification = useNotification();
-
 
     async function getEvaluations () {
         try {
@@ -28,7 +27,7 @@ export default function Evaluations () {
                 headers: {
                     "Content-Type": "application/json",
                 }
-            })
+            });
             const _response = await response.json();
 
             if(response.ok && _response.evaluations) {
@@ -46,8 +45,17 @@ export default function Evaluations () {
         getEvaluations();
     }, []);
 
-    async function deleteEvaluation(evaluationId) {
+    async function deleteEvaluation(evaluationId, filePath) {
         try {
+            // Delete file from Firebase storage
+            if (filePath) {
+                const storage = getStorage();
+                const fileRef = ref(storage, filePath);
+                await deleteObject(fileRef);
+                console.log(`File ${filePath} deleted successfully`);
+            }
+
+            // Delete evaluation record from backend
             const response = await fetch(`http://localhost:7000/api/eval/delete/${evaluationId}`, {
                 method: 'DELETE'
             });
@@ -60,7 +68,8 @@ export default function Evaluations () {
             }
         }
         catch (error) {
-            console.error(error);
+            console.error('Error deleting evaluation or file:', error);
+            showNotification('Error deleting evaluation or file', 'error');
         }
     }
 
@@ -90,7 +99,7 @@ export default function Evaluations () {
                                         <IconButton component={Link} to={`/edit-evaluation/${evaluation._id}`}>
                                             <Edit sx={{ color: 'dodgerblue' }} />
                                         </IconButton>
-                                        <IconButton onClick={() => deleteEvaluation(evaluation._id)}>
+                                        <IconButton onClick={() => deleteEvaluation(evaluation._id, evaluation.uniqueFileName)}>
                                             <Delete sx={{ color: 'dimgray' }} />
                                         </IconButton>
                                     </TableCell>
@@ -103,4 +112,3 @@ export default function Evaluations () {
         </>
     );
 };
-

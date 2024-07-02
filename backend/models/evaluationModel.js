@@ -50,13 +50,17 @@ const evaluationSchema = new schema({
         type: Number,
         required: true,
     },
-    image: {
-        type: String,
-        required: true,
-    },
     identifyManager: {
         type: Boolean,
         required: false,
+    },
+    downloadUrl: {
+        type: String,
+        required: true,
+    },
+    uniqueFileName: {
+        type: String,
+        required: true,
     },
     comments: {
         type: String,

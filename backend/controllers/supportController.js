@@ -1,7 +1,5 @@
 const supportModel = require('../models/supportModel');
 
-//
-//
 
 exports.getTickets = async (req, res) => {
     try {
@@ -50,13 +48,13 @@ exports.getTicket = async (req, res) => {
 
 exports.newTicket = async (req, res) => {
     try {
-        const {ticketId, title, description, location, email, urgency, ticketStatus, archive} = req.body;
-        if(!ticketId || !title || !description || !location || !email || !urgency || !ticketStatus) {
+        const {ticketId, title, description, email, urgency, ticketStatus, archive} = req.body;
+        if(!ticketId || !title || !description || !email || !urgency || !ticketStatus) {
             return res.send({
                 message: "All fields are required"
             })
         }
-        const ticket = new supportModel({ticketId, title, description, location, email, urgency, ticketStatus, archive});
+        const ticket = new supportModel({ticketId, title, description, email, urgency, ticketStatus, archive});
         await ticket.save();
         return res.send({
             message: "Ticket created",
@@ -71,7 +69,7 @@ exports.newTicket = async (req, res) => {
 exports.updateTicket = async (req, res) => {
     try {
         const {id} = req.params;
-        const {title, description, location, email, urgency, ticketStatus, archive} = req.body;
+        const {title, description, email, urgency, ticketStatus, archive} = req.body;
         const ticket = await supportModel.findByIdAndUpdate(id, req.body, {new: true});
         if (!ticket) {
             return res.send({
