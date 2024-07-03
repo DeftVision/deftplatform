@@ -15,6 +15,7 @@ import {
     styled,
     Switch,
     Toolbar,
+    Typography,
 } from '@mui/material';
 import {
     Announcement,
@@ -26,13 +27,16 @@ import {
     Insights,
     Leaderboard,
     LocalLibrary,
-    Login,
     Menu,
     Person,
+    ShieldRounded,
     WbSunny
 } from '@mui/icons-material';
-import {useState} from 'react';
+import LogoutIcon from '@mui/icons-material/Logout';
+import {useState, useContext} from 'react';
+import UserContext from '../components/UserContext';
 import {Link} from 'react-router-dom';
+import cookies from "js-cookie";
 
 const drawerWidth = 240;
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -41,11 +45,16 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 export default function NavDrawer({toggleTheme, theme}) {
     const [open, setOpen] = useState(false);
+    const {user, setUser} = useContext(UserContext);
 
     const toggleDrawer = (newOpen) => () => {
         setOpen(newOpen);
     }
 
+    function logout() {
+        setUser(null);
+        cookies.remove('userCookie');
+    }
 
     return (
         <Box sx={{display: 'flex'}}>
@@ -69,6 +78,10 @@ export default function NavDrawer({toggleTheme, theme}) {
                 onClose={toggleDrawer(false)}
             >
                 <List sx={{alignItems: 'center'}}>
+                <Typography sx={{textAlign: 'center', marginTop: 2, marginBottom: 2}}>User Name</Typography>
+                    <Divider />
+
+
                     <ListItem disablePadding>
                         <ListItemButton component={Link} to="/">
                             <ListItemIcon>
@@ -125,14 +138,27 @@ export default function NavDrawer({toggleTheme, theme}) {
                             <ListItemText primary="Support"/>
                         </ListItemButton>
                     </ListItem>
+
+                    {user && user.role === 'Admin' && (
                     <ListItem disablePadding>
-                        <ListItemButton component={Link} to="/login">
+                        <ListItemButton component={Link} to="/admin">
                             <ListItemIcon>
-                                <Login/>
+                                <ShieldRounded />
                             </ListItemIcon>
-                            <ListItemText primary="Login"/>
+                            <ListItemText primary="Administration"/>
                         </ListItemButton>
                     </ListItem>
+                    )}
+
+                    {user &&
+                    <ListItem disablePadding>
+                        <ListItemButton component={Link} onClick={logout}>
+                            <ListItemIcon>
+                                <LogoutIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Logout"/>
+                        </ListItemButton>
+                    </ListItem>}
                     <ListItem>
                         <FormControlLabel
                             control={<Switch

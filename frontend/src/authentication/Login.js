@@ -1,6 +1,9 @@
 import { Button, Box, TextField, Typography } from '@mui/material';
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import {useContext, useState} from 'react';
+import cookies from 'js-cookie';
+import UserContext from '../components/UserContext'
+import { useNotification} from "../components/NotificationContext";
+
 
 const form_default = {
     email: "",
@@ -9,12 +12,38 @@ const form_default = {
 
 
 
-const Login = () => {
+export default function() {
+    const [form, setForm] = useState(form_default);
+    const showNotification = useNotification();
+    const {setUser} = useContext(UserContext);
+
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const response = await fetch(`http://localhost:7000/api/user/login`,{
+            method: 'POST',
+            body: JSON.stringify(form),
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+
+        const _response = await response.json();
+        if(response.ok && _response.user) {
+            const userId = _response.user._id;
+            cookies.set("userCookie", userId);
+            setUser(_response.user);
+            showNotification(_response.message);
+        } else {
+            showNotification(_response.message, 'error');
+        }
+    }
     return (
         <>
          <Box>
              <Typography>Login</Typography>
-             <form noValidate>
+             <form onSubmit={handleSubmit} noValidate>
                  <TextField
                      type="email"
                      variant="outlined"
@@ -24,6 +53,12 @@ const Login = () => {
                      fullWidth
                      label="Email"
                      sx={{marginBottom: 3, marginTop: 3 }}
+                     onChange={(e)=>{
+                         setForm({
+                             ...form,
+                             email: e.target.value,
+                         })
+                     }}
                  />
 
                  <TextField
@@ -35,6 +70,12 @@ const Login = () => {
                      fullWidth
                      label="Password"
                      sx={{marginBottom: 3}}
+                     onChange={(e)=>{
+                         setForm({
+                             ...form,
+                             password: e.target.value,
+                         })
+                     }}
                  />
                  <Button
                      id="submit-button"
@@ -48,5 +89,3 @@ const Login = () => {
         </>
     );
 };
-
-export default Login;

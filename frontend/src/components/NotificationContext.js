@@ -19,7 +19,7 @@ export const NotificationProvider = ({ children }) => {
             {children}
             <Snackbar
                 open={notification.open}
-                autoHideDuration={6000}
+                autoHideDuration={3000}
                 onClose={handleClose}
             >
                 <Alert onClose={handleClose} severity={notification.severity} sx={{ width: '100%' }}>
