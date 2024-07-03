@@ -1,6 +1,6 @@
 import './App.css';
 import cookies from 'js-cookie';
-import {Box, Container, CssBaseline} from "@mui/material";
+import {Box, Container, CssBaseline, Toolbar} from "@mui/material";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
 import {Navigate, Route, Routes} from 'react-router-dom';
 import {Administration} from './administration/index';
@@ -16,24 +16,8 @@ import {UserForm, Users} from './users/index';
 import Error from './pages/Error';
 import {useEffect, useState} from "react";
 import {useNotification} from "./components/NotificationContext";
+import { lightTheme, darkTheme } from "./components/theme";
 
-export const lightTheme = createTheme({
-    palette: {
-        mode: 'light',
-    },
-    typography: {
-        fontWeightBold: 700, // Define fontWeightBold
-    },
-});
-
-export const darkTheme = createTheme({
-    palette: {
-        mode: 'dark',
-    },
-    typography: {
-        fontWeightBold: 700, // Define fontWeightBold
-    },
-});
 
 function App() {
     const [theme, setTheme] = useState('light');
@@ -48,7 +32,7 @@ function App() {
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme') || 'light';
         setTheme(savedTheme);
-    }, []);
+    }, [theme]);
 
     useEffect(() => {
         localStorage.setItem('theme', theme);
@@ -81,7 +65,9 @@ function App() {
             <UserContext.Provider value={{user, setUser}}>
 
                 <NavDrawer toggleTheme={toggleTheme} theme={theme}/>
-                <Container sx={{marginTop: 15}}>
+                <Box sx={{display: 'flex', flexDirection: 'column', minHeight: '100vh', marginTop: 5}}>
+                <Toolbar />
+                <Container sx={{ flexGrow: 1}}>
                     <Box>
                         <div className="App">
                             <Routes>
@@ -121,6 +107,7 @@ function App() {
                         </div>
                     </Box>
                 </Container>
+                </Box>
             </UserContext.Provider>
         </ThemeProvider>
     )
