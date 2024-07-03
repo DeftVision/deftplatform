@@ -1,22 +1,21 @@
-const userModel = require ('../models/userModel');
+const userModel = require('../models/userModel');
 const bcrypt = require("bcrypt");
 
 exports.getUsers = async (req, res) => {
     try {
         const users = await userModel.find({});
-        if(!users) {
+        if (!users) {
             return res.send({
                 message: "No users found"
             })
         }
-        if(users) {
+        if (users) {
             return res.send({
                 user_count: users.length,
                 users,
             })
         }
-    }
-    catch (error) {
+    } catch (error) {
         console.log(error);
         return res.send({
             message: 'Error getting all users',
@@ -29,18 +28,17 @@ exports.getUser = async (req, res) => {
     try {
         const {id} = req.params;
         const user = await userModel.findById(id);
-        if(!user) {
+        if (!user) {
             return res.send({
                 message: "User not found",
             })
         }
-        if(user) {
+        if (user) {
             return res.send({
                 user,
             })
         }
-    }
-    catch (error) {
+    } catch (error) {
         console.error(error);
         return res.send({
             message: 'Error getting user',
@@ -52,13 +50,13 @@ exports.getUser = async (req, res) => {
 exports.newUser = async (req, res) => {
     try {
         const {firstName, lastName, email, role, location, password, active} = req.body;
-        if(!firstName || !lastName || !email || !role || !location || !password) {
+        if (!firstName || !lastName || !email || !role || !location || !password) {
             return res.send({
                 message: "All fields required",
             })
         }
         const existingUser = await userModel.findOne({email})
-        if(existingUser) {
+        if (existingUser) {
             return res.status(400).json({error: 'User already exists'});
         }
         const hashedPassword = await bcrypt.hash(password, 14)
@@ -68,8 +66,7 @@ exports.newUser = async (req, res) => {
             message: "User saved successfully",
             user,
         })
-    }
-    catch (error) {
+    } catch (error) {
         console.error(error)
         return res.send({
             message: 'Error saving user',
@@ -93,8 +90,7 @@ exports.updateUser = async (req, res) => {
                 user,
             })
         }
-    }
-    catch (error) {
+    } catch (error) {
         console.error(error)
         return res.send({
             message: "Error updating user",
@@ -107,7 +103,7 @@ exports.deleteUser = async (req, res) => {
     try {
         const {id} = req.params;
         const user = await userModel.findByIdAndDelete(id);
-        if(!user) {
+        if (!user) {
             return res.send({
                 message: "User not found",
             })
@@ -116,8 +112,7 @@ exports.deleteUser = async (req, res) => {
                 message: "User deleted successfully",
             })
         }
-    }
-    catch (error) {
+    } catch (error) {
         console.error(error);
         return res.send({
             message: 'Error deleting user',
@@ -129,24 +124,28 @@ exports.deleteUser = async (req, res) => {
 exports.login = async (req, res) => {
     try {
         const {email, password} = req.body;
-        if(!email || !password) {
+        if (!email || !password) {
             return res.send({
                 message: "Both fields are required",
             })
         }
         const user = await userModel.findOne({email});
-        if(!user) {
+        if (!user) {
             return res.send({
                 message: "User is not registered",
             })
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if(!isMatch) {
-            return res.send({
-                message: "User does not match",
+        if (!isMatch) {
+            return res.status(400).send({
+                message: "Credentials do not match",
             })
         }
+        return res.send({
+            message: `user is logged in.`,
+            user,
+        });
     } catch (error) {
         console.error(error);
         return res.send({

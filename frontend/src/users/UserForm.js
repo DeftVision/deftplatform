@@ -8,6 +8,7 @@ const form_default = {
     firstName: "",
     lastName: "",
     email: "",
+    password: "",
     role: "",
     location: "",
     active: false
@@ -49,7 +50,7 @@ export default function UserForm ({newUser}) {
     }, [id]);
 
     const validateFields = () => {
-        const requiredFields = ['firstName', 'lastName', 'email', 'role', 'location'];
+        const requiredFields = ['firstName', 'lastName', 'email', 'password', 'role', 'location'];
         for(let field of requiredFields) {
             if(!form[field]) {
                 return false;
@@ -86,16 +87,13 @@ export default function UserForm ({newUser}) {
             if(response.ok) {
                 console.log(_response.message);
                 showNotification(_response.message, 'success')
-            } else {
-                if (_response.error === 'User already exists') {
-                    showNotification('User already exists', 'error')
-                } else {
-                    showNotification(_response.error, 'error')
-                }
+            }
+            if(!response.ok && _response.user) {
+                showNotification(_response.message, 'error');
             }
         } catch (error) {
-            console.error('Error', error)
-            showNotification('Error saving form', 'error')
+            console.error(error)
+            showNotification('Error saving form!!', 'error')
         }
     }
 
@@ -148,9 +146,22 @@ export default function UserForm ({newUser}) {
                         label="email"
                         name="email"
                         fullWidth
-                        autoComplete="email"
+                        autoComplete="user-email"
                         sx={{marginBottom: 3}}
                         value={form.email}
+                        onChange={handleChange}
+                    />
+
+                    <TextField
+                        id="password"
+                        type="password"
+                        variant="outlined"
+                        label="password"
+                        name="password"
+                        fullWidth
+                        autoComplete="user-password"
+                        sx={{marginBottom: 3}}
+                        value={form.password}
                         onChange={handleChange}
                     />
 
@@ -163,6 +174,7 @@ export default function UserForm ({newUser}) {
                             value={form.role}
                             onChange={handleChange}
                             sx={{textAlign: 'start'}}
+                            autoComplete="user-role"
                         >
                             <MenuItem value="Admin">Admin</MenuItem>
                             <MenuItem value="User">Users</MenuItem>
@@ -181,6 +193,7 @@ export default function UserForm ({newUser}) {
                             value={form.location}
                             sx={{textAlign: 'start'}}
                             onChange={handleChange}
+                            autoComplete="user-location"
                         >
                             <MenuItem value="location 1">location 1</MenuItem>
                             <MenuItem value="location 2">Location 2</MenuItem>

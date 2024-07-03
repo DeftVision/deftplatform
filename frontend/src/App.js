@@ -1,19 +1,21 @@
 import './App.css';
-import { Box, Container, CssBaseline } from "@mui/material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Routes, Route } from 'react-router-dom';
-import { Administration } from './administration/index';
-import { Login } from './authentication/index'
-import { NavDrawer, UserContext, PrivateRoutes } from './components/index';
-import { Dashboard, DashboardData } from './dashboard/index';
-import { Documents, DocumentForm } from './documents/index';
-import { Evaluations, EvaluationForm } from './evaluations/index';
-import { Announcements, AnnouncementForm } from './announcements/index';
-import { Home, Settings } from './pages/index';
-import { Tickets, TicketForm } from './support/index';
-import { Users, UserForm } from './users/index';
+import cookies from 'js-cookie';
+import {Box, Container, CssBaseline} from "@mui/material";
+import {createTheme, ThemeProvider} from "@mui/material/styles";
+import {Navigate, Route, Routes} from 'react-router-dom';
+import {Administration} from './administration/index';
+import {Login} from './authentication/index'
+import {NavDrawer, PrivateRoutes, UserContext} from './components/index';
+import {Dashboard} from './dashboard/index';
+import {DocumentForm, Documents} from './documents/index';
+import {EvaluationForm, Evaluations} from './evaluations/index';
+import {AnnouncementForm, Announcements} from './announcements/index';
+import {Home, Settings} from './pages/index';
+import {TicketForm, Tickets} from './support/index';
+import {UserForm, Users} from './users/index';
 import Error from './pages/Error';
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
+import {useNotification} from "./components/NotificationContext";
 
 export const lightTheme = createTheme({
     palette: {
@@ -35,6 +37,9 @@ export const darkTheme = createTheme({
 
 function App() {
     const [theme, setTheme] = useState('light');
+    const [user, setUser] = useState(null);
+    const userCookie = cookies.get('userCookie');
+    const showNotification = useNotification();
 
     const toggleTheme = () => {
         setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
@@ -49,51 +54,77 @@ function App() {
         localStorage.setItem('theme', theme);
     }, [theme]);
 
+    useEffect(() => {
+        async function getUser() {
+            const response = await fetch(`http://localhost:7000/api/user/user/${userCookie}`, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            const _response = await response.json();
+            if(response.ok) {
+                showNotification(_response.message, 'success');
+            } else {
+                showNotification(_response.error, 'error');
+            }
+
+        }
+        if(userCookie) {
+            getUser();
+        }
+    }, []);
+
     return (
         <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
-            <CssBaseline />
-            <NavDrawer toggleTheme={toggleTheme} theme={theme} />
-            <Container sx={{ marginTop: 15 }}>
-                <Box>
-                    <div className="App">
-                        <Routes>
-                            <Route path="/" element={<Home />} />
-                            <Route path="/admin" element={<Administration />} />
+            <CssBaseline/>
+            <UserContext.Provider value={{user, setUser}}>
 
-                            <Route path="/dashboard" element={<Dashboard />} />
+                <NavDrawer toggleTheme={toggleTheme} theme={theme}/>
+                <Container sx={{marginTop: 15}}>
+                    <Box>
+                        <div className="App">
+                            <Routes>
+                                <Route element={<PrivateRoutes />}>
+                                <Route path="/" element={<Home/>}/>
+                                <Route path="/admin" element={<Administration/>}/>
 
-                            <Route path="/documents" element={<Documents />} />
-                            <Route path="/document-form" element={<DocumentForm newDocument />} />
-                            <Route path="/edit-document/:id" element={<DocumentForm />} />
+                                <Route path="/dashboard" element={<Dashboard/>}/>
 
-                            <Route path="/announcements" element={<Announcements />} />
-                            <Route path="/announcement-form" element={<AnnouncementForm newAnnouncement/>} />
-                            <Route path="/edit-announcement/:id" element={<AnnouncementForm />} />
+                                <Route path="/documents" element={<Documents/>}/>
+                                <Route path="/document-form" element={<DocumentForm newDocument/>}/>
+                                <Route path="/edit-document/:id" element={<DocumentForm/>}/>
 
-                            <Route path="/evaluations" element={<Evaluations />} />
-                            <Route path="/evaluation-form" element={<EvaluationForm newEvaluation />} />
-                            <Route path="/edit-evaluation/:id" element={<EvaluationForm />} />
+                                <Route path="/announcements" element={<Announcements/>}/>
+                                <Route path="/announcement-form" element={<AnnouncementForm newAnnouncement/>}/>
+                                <Route path="/edit-announcement/:id" element={<AnnouncementForm/>}/>
 
-                            <Route path="/administration" element={<Administration />} />
+                                <Route path="/evaluations" element={<Evaluations/>}/>
+                                <Route path="/evaluation-form" element={<EvaluationForm newEvaluation/>}/>
+                                <Route path="/edit-evaluation/:id" element={<EvaluationForm/>}/>
 
-                            <Route path="/tickets" element={<Tickets />} />
-                            <Route path="/ticket-form" element={<TicketForm newTicket/>} />
-                            <Route path="/edit-ticket/:id" element={<TicketForm />} />
+                                <Route path="/administration" element={<Administration/>}/>
 
-                            <Route path="/users" element={<Users />} />
-                            <Route path="/user-form" element={<UserForm newUser/>} />
-                            <Route path="/edit-user/:id" element={<UserForm />} />
+                                <Route path="/tickets" element={<Tickets/>}/>
+                                <Route path="/ticket-form" element={<TicketForm newTicket/>}/>
+                                <Route path="/edit-ticket/:id" element={<TicketForm/>}/>
 
-                            <Route path="/login" element={<Login />} />
+                                <Route path="/users" element={<Users/>}/>
+                                <Route path="/user-form" element={<UserForm newUser/>}/>
+                                <Route path="/edit-user/:id" element={<UserForm/>}/>
 
-                            <Route path="/settings" element={<Settings />} />
-                            <Route path="*" element={<Error />} />
-                        </Routes>
-                    </div>
-                </Box>
-            </Container>
+                                <Route path="/settings" element={<Settings/>}/>
+                                </Route>
+                                <Route path="/login" element={user ? <Navigate to="/"/> : <Login/>}/>
+                                <Route path="*" element={<Error/>}/>
+                            </Routes>
+                        </div>
+                    </Box>
+                </Container>
+            </UserContext.Provider>
         </ThemeProvider>
-    );
+    )
+
 }
 
 export default App;
