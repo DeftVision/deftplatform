@@ -109,7 +109,7 @@ export default function NavDrawer({ toggleTheme, theme }) {
                     >
                         <Menu />
                     </IconButton>
-                    <Typography variant="h6" noWrap component="div">Your Application</Typography>
+                    <Typography variant="h6" noWrap component="div">Logo</Typography>
                 </Toolbar>
             </AppBar>
 
@@ -138,7 +138,6 @@ export default function NavDrawer({ toggleTheme, theme }) {
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    <Typography sx={{ textAlign: 'center', marginTop: 2, marginBottom: 2 }}>{user?.name || 'User Name'}</Typography>
                     <ListItem disablePadding>
                         <ListItemButton component={Link} to="/">
                             <ListItemIcon>

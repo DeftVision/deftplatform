@@ -1,7 +1,7 @@
 import './App.css';
 import cookies from 'js-cookie';
 import {Box, Container, CssBaseline, Toolbar} from "@mui/material";
-import {createTheme, ThemeProvider} from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import {Navigate, Route, Routes} from 'react-router-dom';
 import {Administration} from './administration/index';
 import {Login} from './authentication/index'
@@ -29,10 +29,13 @@ function App() {
         setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
     };
 
+/*
+    **  CAUSES FLICKERING MODES IF ENABLED  **
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme') || 'light';
         setTheme(savedTheme);
     }, [theme]);
+*/
 
     useEffect(() => {
         localStorage.setItem('theme', theme);
@@ -65,9 +68,9 @@ function App() {
             <UserContext.Provider value={{user, setUser}}>
 
                 <NavDrawer toggleTheme={toggleTheme} theme={theme}/>
-                <Box sx={{display: 'flex', flexDirection: 'column', minHeight: '100vh', marginTop: 5}}>
+                <Box sx={{display: 'flex', flexDirection: 'column', marginTop: 5}}>
                 <Toolbar />
-                <Container sx={{ flexGrow: 1}}>
+                <Container sx={{ flexGrow: 2}}>
                     <Box>
                         <div className="App">
                             <Routes>
