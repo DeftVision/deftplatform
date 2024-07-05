@@ -1,8 +1,9 @@
-import { Button, Box, TextField, Typography } from '@mui/material';
+import { Button, Box, Stack, TextField, Typography } from '@mui/material';
 import {useContext, useState} from 'react';
 import cookies from 'js-cookie';
 import UserContext from '../components/UserContext'
 import { useNotification} from "../components/NotificationContext";
+import {Link} from "react-router-dom";
 
 
 const form_default = {
@@ -77,6 +78,8 @@ export default function() {
                          })
                      }}
                  />
+                 <Stack direction="column" spacing={2}>
+                 <Typography component={Link} to="/forgot-password" sx={{textDecoration: 'none', fontStyle: 'italic'}}>Forgot Password</Typography>
                  <Button
                      id="submit-button"
                      variant="outlined"
@@ -84,6 +87,7 @@ export default function() {
                  >
                      SAVE
                  </Button>
+                 </Stack>
              </form>
          </Box>
         </>

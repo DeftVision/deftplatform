@@ -1,44 +1,25 @@
+import { styled, useTheme } from '@mui/material/styles';
+import { Box, CssBaseline, Divider, Drawer, FormControlLabel, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Switch, Toolbar, Typography } from '@mui/material';
+import MuiAppBar from '@mui/material/AppBar';
 import {
-    AppBar,
-    Box,
-    CssBaseline,
-    Divider,
-    Drawer,
-    FormControlLabel,
-    IconButton,
-    List,
-    ListItem,
-    ListItemButton,
-    ListItemText,
-    ListItemIcon,
-    styled,
-    Switch,
-    Toolbar,
-    Typography,
-} from '@mui/material';
-import {
-    Announcement,
+    AdminPanelSettings,
+    AssignmentSharp,
     Brightness1,
     ChevronLeft,
-    ChevronRight,
-    Help,
     Home,
-    Insights,
+    Help,
     Leaderboard,
-    LocalLibrary,
     Menu,
-    Person,
-    ShieldRounded,
-    WbSunny
+    WbSunny,
 } from '@mui/icons-material';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { Link } from 'react-router-dom';
 import { useState, useContext } from 'react';
 import UserContext from '../components/UserContext';
-import { Link } from 'react-router-dom';
-import cookies from "js-cookie";
+import cookies from 'js-cookie'
+
 
 const drawerWidth = 240;
-const miniDrawerWidth = 60;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     ({ theme, open }) => ({
@@ -48,7 +29,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        marginLeft: `-${miniDrawerWidth}px`,
+        marginLeft: `-${drawerWidth}px`,
         ...(open && {
             transition: theme.transitions.create('margin', {
                 easing: theme.transitions.easing.easeOut,
@@ -59,17 +40,35 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     }),
 );
 
+const AppBar = styled(MuiAppBar, {
+    shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme, open }) => ({
+    transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+    }),
+    ...(open && {
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: `${drawerWidth}px`,
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    }),
+}));
+
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
     ...theme.mixins.toolbar,
     justifyContent: 'flex-end',
 }));
 
-export default function NavDrawer({ toggleTheme, theme }) {
+export default function NavDrawer({toggleTheme, theme}) {
+    const {user, setUser } = useContext(UserContext);
     const [open, setOpen] = useState(false);
-    const { user, setUser } = useContext(UserContext);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -80,151 +79,103 @@ export default function NavDrawer({ toggleTheme, theme }) {
     };
 
     function logout() {
-        setUser(null);
-        cookies.remove('userCookie');
+        setUser(null)
+        cookies.remove('userCookie')
     }
 
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
-            <AppBar
-                position="fixed"
-                sx={{
-                    zIndex: (theme) => theme.zIndex.drawer,
-                    transition: (theme) => theme.transitions.create(['width', 'margin'], {
-                        easing: theme.transitions.easing.sharp,
-                        duration: theme.transitions.duration.leavingScreen,
-                    }),
-                    marginLeft: open ? drawerWidth : miniDrawerWidth,
-                    width: `calc(100% - ${open ? drawerWidth : miniDrawerWidth}px)`
-                }}
-            >
+            <AppBar position="fixed" open={open}>
                 <Toolbar>
                     <IconButton
-                        edge="start"
                         color="inherit"
-                        aria-label="menu"
+                        aria-label="open drawer"
                         onClick={handleDrawerOpen}
-                        sx={{ marginRight: 2, ...(open && { display: 'none' }) }}
+                        edge="start"
+                        sx={{ mr: 2, ...(open && { display: 'none' }) }}
                     >
                         <Menu />
                     </IconButton>
-                    <Typography variant="h6" noWrap component="div">Your Application</Typography>
+                    <Typography variant="h6" noWrap component="div">
+                        Company Logo
+                    </Typography>
                 </Toolbar>
             </AppBar>
-
             <Drawer
-                variant="permanent"
                 sx={{
-                    width: open ? drawerWidth : miniDrawerWidth,
+                    width: drawerWidth,
                     flexShrink: 0,
-                    whiteSpace: 'nowrap',
-                    boxSizing: 'border-box',
                     '& .MuiDrawer-paper': {
-                        width: open ? drawerWidth : miniDrawerWidth,
-                        transition: (theme) => theme.transitions.create('width', {
-                            easing: theme.transitions.easing.sharp,
-                            duration: theme.transitions.duration.enteringScreen,
-                        }),
-                        overflowX: 'hidden',
+                        width: drawerWidth,
+                        boxSizing: 'border-box',
                     },
                 }}
+                variant="persistent"
+                anchor="left"
                 open={open}
             >
                 <DrawerHeader>
                     <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'ltr' ? <ChevronRight /> : <ChevronLeft />}
+                        {theme.direction === 'ltr' ? "" : <ChevronLeft />}
                     </IconButton>
                 </DrawerHeader>
                 <Divider />
-                <List>
-                    <Typography sx={{ textAlign: 'center', marginTop: 2, marginBottom: 2 }}>{user?.name || 'User Name'}</Typography>
+                <List sx={{textAlign: 'end'}}>
                     <ListItem disablePadding>
                         <ListItemButton component={Link} to="/">
-                            <ListItemIcon>
-                                <Home />
-                            </ListItemIcon>
-                            <ListItemText primary="Home" />
+                            <ListItemIcon><Home /></ListItemIcon>
+                            <ListItemText primary="Home"/>
                         </ListItemButton>
                     </ListItem>
-                    <ListItem disablePadding>
-                        <ListItemButton component={Link} to="/dashboard">
-                            <ListItemIcon>
-                                <Insights />
-                            </ListItemIcon>
-                            <ListItemText primary="Dashboard" />
-                        </ListItemButton>
-                    </ListItem>
+
                     <ListItem disablePadding>
                         <ListItemButton component={Link} to="/evaluations">
-                            <ListItemIcon>
-                                <Leaderboard />
-                            </ListItemIcon>
-                            <ListItemText primary="Evaluation" />
+                            <ListItemIcon><Leaderboard /></ListItemIcon>
+                            <ListItemText primary="Evaluations"/>
                         </ListItemButton>
                     </ListItem>
+
                     <ListItem disablePadding>
                         <ListItemButton component={Link} to="/documents">
-                            <ListItemIcon>
-                                <LocalLibrary />
-                            </ListItemIcon>
-                            <ListItemText primary="Documents" />
+                            <ListItemIcon><AssignmentSharp /></ListItemIcon>
+                            <ListItemText primary="Docs & Forms"/>
                         </ListItemButton>
                     </ListItem>
-                    <ListItem disablePadding>
-                        <ListItemButton component={Link} to="/users">
-                            <ListItemIcon>
-                                <Person />
-                            </ListItemIcon>
-                            <ListItemText primary="Users" />
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem disablePadding>
-                        <ListItemButton component={Link} to="/announcements">
-                            <ListItemIcon>
-                                <Announcement />
-                            </ListItemIcon>
-                            <ListItemText primary="Announcements" />
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem disablePadding>
+
+                    <ListItem disablePadding sx={{marginBottom: 1}}>
                         <ListItemButton component={Link} to="/tickets">
-                            <ListItemIcon>
-                                <Help />
-                            </ListItemIcon>
-                            <ListItemText primary="Support" />
+                            <ListItemIcon><Help /></ListItemIcon>
+                            <ListItemText primary="Help"/>
                         </ListItemButton>
                     </ListItem>
-                    {user && user.role === 'Admin' && (
-                        <ListItem disablePadding>
-                            <ListItemButton component={Link} to="/admin">
-                                <ListItemIcon>
-                                    <ShieldRounded />
-                                </ListItemIcon>
-                                <ListItemText primary="Administration" />
-                            </ListItemButton>
-                        </ListItem>
-                    )}
+
                     {user && (
-                        <ListItem disablePadding>
+                        <ListItem disablePadding sx={{marginBottom: 2}}>
                             <ListItemButton component={Link} onClick={logout}>
-                                <ListItemIcon>
-                                    <LogoutIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Logout" />
+                                <ListItemIcon><LogoutIcon /></ListItemIcon>
+                                <ListItemText primary="Logout"/>
                             </ListItemButton>
                         </ListItem>
                     )}
+
+                    {user && user.role === 'Admin' && (
+                        <ListItem disablePadding sx={{marginTop: 2}}>
+                            <ListItemButton component={Link} to="/administration">
+                                <ListItemIcon><AdminPanelSettings /></ListItemIcon>
+                                <ListItemText primary="Admin"/>
+                            </ListItemButton>
+                        </ListItem>
+                    )}
+
                     <ListItem>
                         <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={theme === 'dark'}
-                                    onChange={toggleTheme}
-                                    icon={<Brightness1 />}
-                                    checkedIcon={<WbSunny />}
-                                />
-                            }
+                            control={<Switch
+                                checked={theme === 'dark'}
+                                onChange={toggleTheme}
+                                icon={<Brightness1/>}
+                                checkedIcon={<WbSunny/>}
+                            />}
                             label="Mode"
                         />
                     </ListItem>
@@ -232,8 +183,7 @@ export default function NavDrawer({ toggleTheme, theme }) {
             </Drawer>
             <Main open={open}>
                 <DrawerHeader />
-                {/* Rest of your content */}
             </Main>
         </Box>
     );
-};
+}
