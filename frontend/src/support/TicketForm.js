@@ -143,9 +143,9 @@ export default function TicketForm({newTicket}) {
                     <FormControl fullWidth sx={{marginBottom: 3}}>
                         <InputLabel id="priority">urgency</InputLabel>
                         <Select
-                            id="urgency"
-                            label="urgency"
-                            value={form.urgency}
+                            id="priority"
+                            label="priority"
+                            value={form.priority}
                             name="urgency"
                             sx={{textAlign: 'start'}}
                             onChange={handleChange}

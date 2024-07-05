@@ -18,7 +18,7 @@ const supportSchema = new schema({
         type: String,
         required: true,
     },
-    urgency: {
+    priority: {
         type: String,
         required: true,
     },

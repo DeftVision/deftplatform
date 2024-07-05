@@ -4,7 +4,7 @@ import {Box, Container, CssBaseline, Toolbar} from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import {Navigate, Route, Routes} from 'react-router-dom';
 import {Administration} from './administration/index';
-import {Login} from './authentication/index'
+import {Login, ForgotPassword} from './authentication/index'
 import {NavDrawer, PrivateRoutes, UserContext} from './components/index';
 import {Dashboard} from './dashboard/index';
 import {DocumentForm, Documents} from './documents/index';
@@ -30,7 +30,7 @@ function App() {
     };
 
 /*
-    **  CAUSES FLICKERING MODES IF ENABLED  **
+    **  CAUSES LIGHT AND DARK MODE FLICKERING IF ENABLED  **
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme') || 'light';
         setTheme(savedTheme);
@@ -68,9 +68,9 @@ function App() {
             <UserContext.Provider value={{user, setUser}}>
 
                 <NavDrawer toggleTheme={toggleTheme} theme={theme}/>
-                <Box sx={{display: 'flex', flexDirection: 'column', marginTop: 5}}>
+                <Box sx={{display: 'flex', flexDirection: 'column'}}>
                 <Toolbar />
-                <Container sx={{ flexGrow: 2}}>
+                <Container sx={{ flexGrow: 1 }}>
                     <Box>
                         <div className="App">
                             <Routes>
@@ -105,6 +105,7 @@ function App() {
                                 <Route path="/settings" element={<Settings/>}/>
                                 </Route>
                                 <Route path="/login" element={user ? <Navigate to="/"/> : <Login/>}/>
+                                <Route path="/forgot-password" element={<ForgotPassword/>}/>
                                 <Route path="*" element={<Error/>}/>
                             </Routes>
                         </div>
@@ -114,7 +115,6 @@ function App() {
             </UserContext.Provider>
         </ThemeProvider>
     )
-
 }
 
 export default App;

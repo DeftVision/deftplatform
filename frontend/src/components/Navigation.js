@@ -5,7 +5,7 @@ import {Menu, DarkMode, WbSunny} from "@mui/icons-material";
 
 export default function Navigation({ toggleTheme, theme }) {
     return (
-        <AppBar position="sticky">
+        <AppBar>
             <Toolbar>
                 <IconButton>
                     <Menu sx={{color: 'white'}} />
