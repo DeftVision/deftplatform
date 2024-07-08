@@ -10,6 +10,7 @@ const announcementRoutes = require('./routes/announcementRoute');
 const evaluationRoutes = require('./routes/evaluationRoute');
 const userRoutes = require('./routes/userRoute');
 const supportRoutes = require('./routes/supportRoute');
+const formDataRoutes = require('./routes/formDataRoute');
 
 
 const app = express();
@@ -21,6 +22,7 @@ app.use('/api/announce', announcementRoutes);
 app.use('/api/eval', evaluationRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/support', supportRoutes);
+app.use('/api/form', formDataRoutes);
 
 app.listen(port, () => {
     console.log(`Server started on port ${port}`);
