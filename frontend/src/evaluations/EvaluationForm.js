@@ -102,9 +102,9 @@ export default function EvaluationForm({newEvaluation}) {
     }, [id]);
 
     const validateFields = () => {
-        const requiredFields = ['visitDateTime', 'location', 'evaluator', 'cashier', 'wait', 'comments']
+        const requiredFields = ['visitDateTime', 'location', 'evaluator', 'cashier', 'wait', 'comments'/*, 'appearanceScore', 'serviceScore', 'serviceScore'*/]
         for (let field of requiredFields) {
-            if (!form[field]) {
+            if (form[field] === undefined || form[field] === null || form[field] === '') {
                 return false;
             }
         }
@@ -112,14 +112,13 @@ export default function EvaluationForm({newEvaluation}) {
     }
 
     const handleChange = (e, newValue) => {
-        const {name, value, type, checked} = e.target;
+        const { name, value, type, checked } = e.target;
         if (name) {
             setForm({
                 ...form,
                 [name]: type === 'checkbox' ? checked : value,
             })
-        }
-        if (typeof newValue === 'number') {
+        } else if (typeof newValue === 'number') {
             setForm(prevForm => ({
                 ...prevForm,
                 [e.target.ariaLabel]: newValue

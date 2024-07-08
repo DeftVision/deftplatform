@@ -36,19 +36,19 @@ const evaluationSchema = new schema({
     },
     wait: {
         type: Number,
-        required: true,
+        required: false,
     },
     foodScore: {
         type: Number,
-        required: true,
+        required: false,
     },
     appearanceScore: {
         type: Number,
-        required: true,
+        required: false,
     },
     serviceScore: {
         type: Number,
-        required: true,
+        required: false,
     },
     identifyManager: {
         type: Boolean,
