@@ -10,6 +10,7 @@ import {Dashboard} from './dashboard/index';
 import {DocumentForm, Documents} from './documents/index';
 import {EvaluationForm, Evaluations} from './evaluations/index';
 import {AnnouncementForm, Announcements} from './announcements/index';
+import TestComponent from './components/TestComponent';
 import {Home, Settings} from './pages/index';
 import {TicketForm, Tickets} from './support/index';
 import {UserForm, Users} from './users/index';
@@ -105,6 +106,7 @@ function App() {
                                 <Route path="/settings" element={<Settings/>}/>
                                 </Route>
                                 <Route path="/login" element={user ? <Navigate to="/"/> : <Login/>}/>
+                                <Route path="test-component" element={<TestComponent/>}/>
                                 <Route path="/forgot-password" element={<ForgotPassword/>}/>
                                 <Route path="*" element={<Error/>}/>
                             </Routes>
