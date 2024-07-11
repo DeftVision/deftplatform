@@ -6,6 +6,7 @@ import {
     AssignmentSharp,
     Brightness1,
     ChevronLeft,
+    Report,
     Home,
     Help,
     Leaderboard,
@@ -147,6 +148,13 @@ export default function NavDrawer({toggleTheme, theme}) {
                         <ListItemButton component={Link} to="/tickets">
                             <ListItemIcon><Help /></ListItemIcon>
                             <ListItemText primary="Help"/>
+                        </ListItemButton>
+                    </ListItem>
+
+                    <ListItem disablePadding sx={{marginBottom: 1}}>
+                        <ListItemButton component={Link} to="/test-component">
+                            <ListItemIcon><Report /></ListItemIcon>
+                            <ListItemText primary="Generic Form"/>
                         </ListItemButton>
                     </ListItem>
 

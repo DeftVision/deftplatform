@@ -8,5 +8,5 @@ const formSchema = new schema ({
 })
 
 
-const formModel = mongoose.model("Form", formSchema);
-module.exports = formModel;
+const formDataModel = mongoose.model("Form", formSchema);
+module.exports = formDataModel;

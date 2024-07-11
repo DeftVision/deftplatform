@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const {newForm} = '../controllers/formDataController';
+const {getForms, newForm} = require ('../controllers/formController');
 
-router.post('/submit-form', newForm)
-
+router.get('/forms', getForms)
+router.post('/new', newForm)
 
 module.exports = router;
