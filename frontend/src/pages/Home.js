@@ -1,7 +1,5 @@
 import {Box, Typography} from '@mui/material';
-import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-
+import {useEffect, useState} from "react";
 
 export default function Home () {
     return (

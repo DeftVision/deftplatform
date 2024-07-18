@@ -1,13 +1,13 @@
-import React from 'react';
+import {useState} from 'react';
 import GenericFormStructure from './GenericFormStructure';
 import { Box, Button } from "@mui/material";
-import { useState } from "react";
+
 import { useNotification } from './NotificationContext';
 
 const form_fields = [
     { type: 'text', required: true, title: 'Name of User', name: 'name' },
     { type: 'slider', required: true, title: 'Age of User', name: 'age' },
-    { type: 'switch', required: false, title: 'archived', name: 'archived' },
+    { type: 'switch', required: false, title: 'archived', name: 'archived' }
 ];
 
 export default function TestComponent() {
@@ -15,11 +15,11 @@ export default function TestComponent() {
     const [formData, setFormData] = useState({});
 
     const handleChange = (name, value) => {
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
+        setFormData(prevData => ({
+            ...prevData,
+            [name]: value
+        }))
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -48,8 +48,8 @@ export default function TestComponent() {
     return (
         <Box sx={{ p: 3 }}>
             <form onSubmit={handleSubmit}>
-                <GenericFormStructure form_fields={form_fields} handleChange={handleChange} />
-                <Button variant="outlined" type="submit">Save</Button>
+                <GenericFormStructure form_fields={form_fields} />
+                <Button variant="outlined" type="submit" handleChange={handleChange}>Save</Button>
             </form>
         </Box>
     );

@@ -1,6 +1,31 @@
 import { Box, FormControlLabel, Slider, Switch, TextField } from '@mui/material';
+import { useState } from "react";
 
-export default function GenericFormStructure({ form_fields, handleChange }) {
+const value_defaults = {
+    text: "working",
+    slider: 5,
+    switch: true
+}
+
+export default function GenericFormStructure({ form_fields }) {
+    const form_defaults = {}
+
+    for (let i = 0; i < form_fields.length; i++ ) {
+        const field = form_fields[i];
+        form_defaults[field.name] = value_defaults[field.type];
+    }
+
+
+    const [formData, setFormData] = useState(form_defaults);
+    console.log(formData);
+
+    const handleChange = (name, value) => {
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+    };
+
     const formComponents = {
         text: (form_field) => (
             <TextField
@@ -9,6 +34,7 @@ export default function GenericFormStructure({ form_fields, handleChange }) {
                 variant="outlined"
                 label={form_field.title}
                 name={form_field.name}
+                value={formData.name}
                 multiline
                 fullWidth
                 onChange={(e) => handleChange(form_field.name, e.target.value)}
@@ -18,7 +44,7 @@ export default function GenericFormStructure({ form_fields, handleChange }) {
         slider: (form_field) => (
             <Box key={form_field.name} sx={{ marginBottom: 3 }}>
                 <Slider
-                    name={form_field.name}
+                    value={formData[form_field.name]}
                     valueLabelDisplay="auto"
                     min={0}
                     max={10}
@@ -29,7 +55,7 @@ export default function GenericFormStructure({ form_fields, handleChange }) {
         switch: (form_field) => (
             <FormControlLabel
                 key={form_field.name}
-                control={<Switch name={form_field.name} onChange={(e) => handleChange(form_field.name, e.target.checked)} />}
+                control={<Switch checked={formData[form_field.name]} name={form_field.name} onChange={(e) => handleChange(form_field.name, e.target.checked)} />}
                 label={form_field.title}
                 sx={{ marginBottom: 3 }}
             />

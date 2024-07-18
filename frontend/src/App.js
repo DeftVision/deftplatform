@@ -30,31 +30,29 @@ function App() {
         setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
     };
 
-/*
-    **  CAUSES LIGHT AND DARK MODE FLICKERING IF ENABLED  **
-    useEffect(() => {
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        setTheme(savedTheme);
-    }, [theme]);
-*/
-
     useEffect(() => {
         localStorage.setItem('theme', theme);
     }, [theme]);
 
     useEffect(() => {
         async function getUser() {
-            const response = await fetch(`http://localhost:7000/api/user/user/${userCookie}`, {
-                method: 'GET',
-                headers: {
-                    "Content-Type": "application/json",
+            try {
+                const response = await fetch(`http://localhost:7000/api/user/user/${userCookie}`, {
+                    method: 'GET',
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                });
+                const _response = await response.json();
+                if(response.ok) {
+                    setUser(_response.user)
+                    showNotification(_response.message, 'success');
+                } else {
+                    showNotification(_response.error, 'error');
                 }
-            });
-            const _response = await response.json();
-            if(response.ok) {
-                showNotification(_response.message, 'success');
-            } else {
-                showNotification(_response.error, 'error');
+            }
+            catch (error) {
+                showNotification('Error fetching user data', 'error');
             }
 
         }
@@ -62,6 +60,8 @@ function App() {
             getUser();
         }
     }, []);
+
+
 
     return (
         <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
