@@ -1,13 +1,16 @@
 import { Box, FormControlLabel, Slider, Switch, TextField } from '@mui/material';
-import { useState } from "react";
+
+
+// TODO: new error thrown. 'Cannot read properties of undefined(reading 'name')'
+
 
 const value_defaults = {
-    text: "working",
-    slider: 5,
+    text: "",
+    slider: 0,
     switch: true
 }
 
-export default function GenericFormStructure({ form_fields }) {
+export default function GenericFormStructure({ form_fields, setFormData, formData }) {
     const form_defaults = {}
 
     for (let i = 0; i < form_fields.length; i++ ) {
@@ -16,8 +19,6 @@ export default function GenericFormStructure({ form_fields }) {
     }
 
 
-    const [formData, setFormData] = useState(form_defaults);
-    console.log(formData);
 
     const handleChange = (name, value) => {
         setFormData({
@@ -25,6 +26,7 @@ export default function GenericFormStructure({ form_fields }) {
             [name]: value,
         });
     };
+
 
     const formComponents = {
         text: (form_field) => (
