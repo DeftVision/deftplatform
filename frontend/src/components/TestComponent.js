@@ -10,16 +10,11 @@ const form_fields = [
     { type: 'switch', required: false, title: 'archived', name: 'archived' }
 ];
 
+
 export default function TestComponent() {
     const showNotification = useNotification();
-    const [formData, setFormData] = useState({});
+    const [formData, setFormData] = useState();
 
-    const handleChange = (name, value) => {
-        setFormData(prevData => ({
-            ...prevData,
-            [name]: value
-        }))
-    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -48,8 +43,8 @@ export default function TestComponent() {
     return (
         <Box sx={{ p: 3 }}>
             <form onSubmit={handleSubmit}>
-                <GenericFormStructure form_fields={form_fields} />
-                <Button variant="outlined" type="submit" handleChange={handleChange}>Save</Button>
+                <GenericFormStructure form_fields={form_fields} setFormData={setFormData} formData={formData} />
+                <Button variant="outlined" type="submit" >Save</Button>
             </form>
         </Box>
     );
